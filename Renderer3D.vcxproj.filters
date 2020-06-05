@@ -13,8 +13,11 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Archivos de recursos\Include">
+    <Filter Include="Include">
       <UniqueIdentifier>{8da350bc-19e0-4e3a-bb4f-48823852eb4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{98541c60-5846-4ced-b32c-67549761d43f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -27,16 +30,27 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\khrplatform.h">
-      <Filter>Archivos de recursos\Include</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\glad.h">
-      <Filter>Archivos de recursos\Include</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\glfw3.h">
-      <Filter>Archivos de recursos\Include</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="include\glfw3native.h">
-      <Filter>Archivos de recursos\Include</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="test.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="test.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

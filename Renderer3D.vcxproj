@@ -136,6 +136,11 @@
     <ClInclude Include="include\glfw3.h" />
     <ClInclude Include="include\glfw3native.h" />
     <ClInclude Include="include\khrplatform.h" />
+    <ClInclude Include="Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="test.frag" />
+    <None Include="test.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
