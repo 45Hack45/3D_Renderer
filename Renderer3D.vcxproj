@@ -133,6 +133,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="include\glad.h" />
     <ClInclude Include="include\glfw3.h" />
     <ClInclude Include="include\glfw3native.h" />

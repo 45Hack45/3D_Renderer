@@ -1,10 +1,10 @@
 #ifndef Texture_H
 #define Texture_H
 
-#include "include/glad.h"
+#include "glad.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "include/stb_image.h"
+#include "stb_image.h"
 
 class Texture
 {
