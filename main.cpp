@@ -19,6 +19,7 @@
 #include "Camera.h"
 #include "Model.h"
 
+#include "LightSource.h"
 
 #define window_size_X 1280
 #define window_size_Y 720
@@ -33,7 +34,7 @@ float lastFrame = 0.0f;
 //Camera
 Camera cam = Camera(glm::vec3(0, 0, 3));
 
-bool moveCam = true;
+bool moveCam = false;
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -110,15 +111,26 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 		cam.ProcessMouseScroll(yoffset);
 }
 
-void test_render_triangle(GLFWwindow* window) {
+void imgui_beginFrame() {
+	//GUI window
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+}
+void imgui_RenderFrame() {
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void test_render(GLFWwindow* window) {
 
 	set_log_level(LOG_DEBUG);
 	log_message(LOG_INFO, "//-----------------Starting Test-----------------//");
-
+	
 	// load and compile our shader program
 	// ------------------------------------
-	const char *vertPath = "./Shaders/test.vert";
-	const char* fragPath = "./Shaders/test.frag";
+	const char *vertPath = "./Shaders/PhongShader.vert";
+	const char* fragPath = "./Shaders/PhongShader.frag";
 
 	Shader shader = Shader(vertPath, fragPath);
 
@@ -131,7 +143,7 @@ void test_render_triangle(GLFWwindow* window) {
 
 
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	glm::mat4 view = glm::mat4(1.0f);
 
@@ -142,7 +154,19 @@ void test_render_triangle(GLFWwindow* window) {
 
 	Model mesh("./rcs/Backpack/backpack.obj");
 
-	bool show_demo_window = true;
+	LightSource_Directional dirLight(Color(252, 212, 64, 1)/255.f, 1.f, glm::vec3(1, 0, 0));
+
+	shader.use();
+	//Setting directional light
+	shader.setFloat("lightsrc_directional_intensity", dirLight.getIntensity(glm::vec3(.0f)));
+	shader.setVector("lightsrc_directional_color", dirLight.getColor(glm::vec3(1.f)).getColor());
+
+	shader.setFloat("ambientLight", .075f);
+	shader.setVector("ambientColor", glm::vec4(1, 1, 1, 1));
+
+	bool show_dir_light_gui = true;
+	float rotationSpeed = .25f;
+	float dirLight_rotation_X = 0, dirLight_rotation_Y = 0;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -154,13 +178,13 @@ void test_render_triangle(GLFWwindow* window) {
 
 		//Clearing screen
 		glClearColor(1.f, 0.3f, 0.3f, 1.0f);
+		//glClearColor(.0f, 0.f, 0.f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		float timeValue = glfwGetTime();
 		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;//Changing the value over time
 		
 		shader.use();//Bind shader program
-		shader.setFloat("ourColor", 0.0f, greenValue, 0.0f, 1.0f);//setting uniform color
 
 		//Rotate camera over time
 		const float radius = 10.0f;
@@ -173,21 +197,28 @@ void test_render_triangle(GLFWwindow* window) {
 		shader.setMat4("model", model);
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
+		shader.setVector("viewPos", cam.Position);
+
+		//Update directional light direction
+		//dirLight_direction = glm::vec3(sin(glfwGetTime() * rotationSpeed), 0, cos(glfwGetTime() * rotationSpeed));
+		dirLight.setDirection(glm::vec3(cos(dirLight_rotation_X), 0, sin(dirLight_rotation_X)));
+		shader.setVector("lightsrc_directional_direction", dirLight.getDirection(glm::vec3(.0f)));
 
 		mesh.Draw(shader);
 
-		
-		//GUI window
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		imgui_beginFrame();//-----------------------------Render GUI------------------------------------------
 
 		//ImGui::ShowDemoWindow(&show_demo_window);
-
+		ImGui::Begin("Frame Rate");
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::End();
+		
+		if (ImGui::Begin("Directional Light", &show_dir_light_gui)) {
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			ImGui::SliderAngle("X Rotation", &dirLight_rotation_X);
+		}
+		ImGui::End();
+		imgui_RenderFrame();//**************************************************************
 
 		glfwSwapBuffers(window);//Update screen
 		glfwPollEvents();//check events
@@ -266,12 +297,12 @@ int main() {
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);//hide and auto-center cursor
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);//hide and auto-center cursor
 
 
 	initImgui(window);
 
-	test_render_triangle(window);
+	test_render(window);
 
 	//Main loop
 	while (!glfwWindowShouldClose(window))

@@ -1,7 +1,11 @@
 #ifndef Texture_H
 #define Texture_H
 
+#include <iostream>
+
 #include "glad.h"
+
+#include "logger.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"

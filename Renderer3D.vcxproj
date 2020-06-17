@@ -140,6 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Color.h" />
     <ClInclude Include="include\glad.h" />
     <ClInclude Include="include\glfw3.h" />
     <ClInclude Include="include\glfw3native.h" />
@@ -152,6 +153,7 @@
     <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\imgui\imstb_truetype.h" />
     <ClInclude Include="include\khrplatform.h" />
+    <ClInclude Include="LightSource.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
@@ -160,8 +162,10 @@
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\test.frag" />
-    <None Include="Shaders\test.vert" />
+    <None Include="Shaders\PhongShader.frag" />
+    <None Include="Shaders\PhongShader.vert" />
+    <None Include="Shaders\UnlitShader.frag" />
+    <None Include="Shaders\UnlitShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
