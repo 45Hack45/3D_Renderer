@@ -21,11 +21,14 @@
 
 #include "LightSource.h"
 
-#define window_size_X 1280
-#define window_size_Y 720
+#define window_size_X 1920
+#define window_size_Y 1080
 #define aRatio 1.f*window_size_X/window_size_Y
 #define window_size  window_size_X,window_size_Y
 
+#define full_screen_mode false
+
+#define _pi 3.14159265359
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -122,6 +125,57 @@ void imgui_RenderFrame() {
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+void sendLightInfo2Shader(Shader& shader, const std::vector<LightSource_Point>& pointLights, std::vector<LightSource_Spot>& spotLights,const LightSource_Directional& dirLight) {
+
+	shader.use();
+
+	//Setting directional light
+	shader.setFloat("lightsrc_directional_intensity", dirLight.getIntensity());
+	shader.setVector("lightsrc_directional_color", dirLight.getColor().getColorVec());
+
+	shader.setFloat("ambientLight", .025f);
+	shader.setVector("ambientColor", glm::vec4(1, 1, 1, 1));
+
+	for (int i = 0; i < pointLights.size(); i++)
+	{
+		std::string pointsi = "pointLights[";
+		pointsi += std::to_string(i);
+		pointsi += "].";
+
+		//std::cout << (pointsi + "color") << endl;
+		/*if(i==0)
+			std::cout << pointLights[i].m_intensity<< endl;*/
+		
+		shader.setVector(pointsi + "color", pointLights[i].getColor().getColorVec());
+		shader.setVector(pointsi + "position", pointLights[i].getPosition());
+		shader.setFloat(pointsi + "intensity", pointLights[i].m_intensity);
+		shader.setFloat(pointsi + "linear", pointLights[i].m_linear);
+		shader.setFloat(pointsi + "quadratic", pointLights[i].m_quadratic);
+	}
+
+	for (int i = 0; i < spotLights.size(); i++)
+	{
+		std::string pointsi = "spotLights[";
+		pointsi += std::to_string(i);
+		pointsi += "].";
+
+		//std::cout << (pointsi + "color") << endl;
+		/*if(i==0)
+			std::cout << pointLights[i].m_intensity<< endl;*/
+
+		shader.setVector(pointsi + "color", spotLights[i].getColor().getColorVec());
+		shader.setVector(pointsi + "position", spotLights[i].m_pos);
+		shader.setVector(pointsi + "direction", normalize(spotLights[i].m_dir));
+		shader.setFloat(pointsi + "intensity", spotLights[i].m_intensity);
+		shader.setFloat(pointsi + "linear", spotLights[i].m_linear);
+		shader.setFloat(pointsi + "angle", cos(spotLights[i].m_angle * _pi));
+		shader.setFloat(pointsi + "outerAngle", cos(spotLights[i].m_outerAngle * _pi));
+	}
+
+	shader.setInt("nPointLights", pointLights.size());
+	shader.setInt("nSpotLights", spotLights.size());
+}
+
 void test_render(GLFWwindow* window) {
 
 	set_log_level(LOG_DEBUG);
@@ -143,7 +197,7 @@ void test_render(GLFWwindow* window) {
 
 
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	glm::mat4 view = glm::mat4(1.0f);
 
@@ -152,17 +206,27 @@ void test_render(GLFWwindow* window) {
 
 	glEnable(GL_DEPTH_TEST); 
 
-	Model mesh("./rcs/Backpack/backpack.obj");
+	Model mesh("./rcs/backpack/backpack.obj");
 
-	LightSource_Directional dirLight(Color(252, 212, 64, 1)/255.f, 1.f, glm::vec3(1, 0, 0));
+	//Lights
 
-	shader.use();
-	//Setting directional light
-	shader.setFloat("lightsrc_directional_intensity", dirLight.getIntensity(glm::vec3(.0f)));
-	shader.setVector("lightsrc_directional_color", dirLight.getColor(glm::vec3(1.f)).getColor());
+	//Directional Light
+	LightSource_Directional dirLight(Color(252, 212, 64, 1)/255.f, 0*1.f, glm::vec3(1, 0, 0));
 
-	shader.setFloat("ambientLight", .075f);
-	shader.setVector("ambientColor", glm::vec4(1, 1, 1, 1));
+	std::vector<LightSource_Point> pointLights;
+	std::vector<LightSource_Spot> spotLights;
+
+	//PointLight
+	LightSource_Point pointL1(Color(0.f, 0.f, 1.f), 1.f, glm::vec3(0, 0, 10), 0.14,0.07);
+	LightSource_Point pointLRed(Color(1.f, 0,0), 1.f, glm::vec3(0, 0, -10), 0.14, 0.07);
+	
+	pointLights.push_back(pointL1);
+	pointLights.push_back(pointLRed);
+
+	//SpotLight
+	LightSource_Spot spot1(Color(1.f, 1.f, 1.f), 1.f, glm::vec3(0, 10, 0), glm::vec3(0, -10, 0), 45, 50, 0.14, 0.07);
+
+	spotLights.push_back(spot1);
 
 	bool show_dir_light_gui = true;
 	float rotationSpeed = .25f;
@@ -185,11 +249,15 @@ void test_render(GLFWwindow* window) {
 		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;//Changing the value over time
 		
 		shader.use();//Bind shader program
+		
+		//Rotate over time
+		const float radius = 5.f;
+		const float frequency = 1.f;
+		float camX = sin(glfwGetTime() * frequency) * radius;
+		float camZ = cos(glfwGetTime() * frequency) * radius;
 
-		//Rotate camera over time
-		const float radius = 10.0f;
-		float camX = sin(glfwGetTime()) * radius;
-		float camZ = cos(glfwGetTime()) * radius;
+		sendLightInfo2Shader(shader, pointLights, spotLights, dirLight);//Update Lights
+
 
 		view = cam.GetViewMatrix();
 		projection = glm::perspective(glm::radians(cam.Zoom), aRatio, 0.1f, 100.0f);
@@ -213,9 +281,76 @@ void test_render(GLFWwindow* window) {
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::End();
 		
-		if (ImGui::Begin("Directional Light", &show_dir_light_gui)) {
+		//Light Windows
+		if (ImGui::Begin("Lights", &show_dir_light_gui)) {
+			//Directional light
+			if (ImGui::TreeNode("Directional Light")) {
 
-			ImGui::SliderAngle("X Rotation", &dirLight_rotation_X);
+				ImGui::ColorEdit3("Color", (float*)&dirLight.m_color.color_vect);
+				ImGui::SliderAngle("X Rotation", &dirLight_rotation_X);
+				ImGui::SliderFloat("Intensity", &dirLight.m_intensity, 0, 5);
+
+				ImGui::TreePop();
+			}
+
+			//Point Lights
+			if (ImGui::TreeNode("Point Lights")) {
+
+				for (int i = 0; i < pointLights.size(); i++)
+				{
+					string lightNode = "Light_" + std::to_string(i);
+					if (ImGui::TreeNode(lightNode.c_str()))
+					{
+						ImGui::ColorEdit3("Color", (float*)&pointLights[i].m_color.color_vect);
+						ImGui::DragFloat3("Position", (float*)&pointLights[i].m_pos);
+
+						ImGui::Spacing();
+
+						ImGui::SliderFloat("Intensity", &(pointLights[i].m_intensity),0,5);
+						ImGui::SliderFloat("Linear", &(pointLights[i].m_linear),0,.5);
+						ImGui::SliderFloat("Quadratic", &(pointLights[i].m_quadratic),0,.1);
+						ImGui::TreePop();
+					}
+				}
+
+				ImGui::TreePop();
+			}
+
+			//Spot Lights
+			if (ImGui::TreeNode("Spot Lights")) {
+
+				for (int i = 0; i < spotLights.size(); i++)
+				{
+					string lightNode = "Light_" + std::to_string(i);
+					if (ImGui::TreeNode(lightNode.c_str()))
+					{
+						ImGui::ColorEdit3("Color", (float*)&spotLights[i].m_color.color_vect);
+
+						ImGui::Spacing();
+
+						ImGui::DragFloat3("Position", (float*)&spotLights[i].m_pos);
+						ImGui::SliderFloat3("Direction", (float*)&spotLights[i].m_dir, -90, 90);
+
+						ImGui::Spacing();
+
+						ImGui::SliderFloat("Intensity", &(spotLights[i].m_intensity), 0, 5);
+
+						ImGui::Spacing();
+
+						ImGui::Spacing(); ImGui::SliderFloat("Inner Angle", &(spotLights[i].m_angle), 0, 1);
+						ImGui::Spacing(); ImGui::SliderFloat("Outer Angle", &(spotLights[i].m_outerAngle), 0, 1);
+
+						ImGui::Spacing();
+
+						ImGui::SliderFloat("Linear", &(spotLights[i].m_linear), 0, .5);
+						ImGui::SliderFloat("Quadratic", &(spotLights[i].m_quadratic), 0, .1);
+
+						ImGui::TreePop();
+					}
+				}
+
+				ImGui::TreePop();
+			}
 		}
 		ImGui::End();
 		imgui_RenderFrame();//**************************************************************
@@ -272,7 +407,9 @@ int main() {
 
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(window_size_X, window_size_Y, "Renderer", NULL, NULL);
+	GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+
+	GLFWwindow* window = glfwCreateWindow(window_size_X, window_size_Y, "Renderer", (full_screen_mode)?primaryMonitor:NULL, NULL);
 
 	if (window == NULL)
 	{
