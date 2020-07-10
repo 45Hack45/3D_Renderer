@@ -22,15 +22,15 @@
     <Filter Include="Include\imgui">
       <UniqueIdentifier>{d23fd0aa-0116-4e67-92ec-ce3b29fd2e43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Util">
+      <UniqueIdentifier>{257de85d-139d-4b57-b7e8-13be1992b7d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Util">
+      <UniqueIdentifier>{24e334e5-635e-4910-81f1-c4ecffc51b80}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
-    <ClCompile Include="glad.c">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
-    <ClCompile Include="logger.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="include\imgui\imgui.cpp">
@@ -50,6 +50,24 @@
     </ClCompile>
     <ClCompile Include="include\imgui\imgui_widgets.cpp">
       <Filter>Include\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="logger.cpp">
+      <Filter>Archivos de origen\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>Archivos de origen\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -72,9 +90,6 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="logger.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
@@ -113,8 +128,26 @@
     <ClInclude Include="LightSource.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="Color.h">
+    <ClInclude Include="Engine.h">
       <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>Archivos de encabezado\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="logger.h">
+      <Filter>Archivos de encabezado\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="IO.hpp">
+      <Filter>Archivos de encabezado\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="TestRender.hpp">
+      <Filter>Archivos de encabezado\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

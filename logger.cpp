@@ -27,6 +27,10 @@ void log_message(const enum log_level_e log_level, const char* const message) {
 	(void)fprintf(stderr, "%s\n", message);
 }
 
+void log_error(const char* const message) {
+	log_message(log_level_e::LOG_INFO, message);
+}
+
 void log_printf(const enum log_level_e log_level, const char* const format, ...) {
 	assert(log_level > LOG_NONE);
 	assert(format != NULL);

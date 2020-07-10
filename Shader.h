@@ -77,7 +77,7 @@ public:
 	// constructor generates the shader on the fly frome one single file
 	// ------------------------------------------------------------------------
 	Shader(const char* shaderPath) {
-		std::cout << "ERROR::SHADER::CONSTRUCTOR_NOT_IMPLEMENTED\n SHADER: " << shaderPath << std::endl;
+		log_printf(log_level_e::LOG_INFO,"ERROR::SHADER::CONSTRUCTOR_NOT_IMPLEMENTED\n SHADER: %s", shaderPath);
 	}
 
 	~Shader() {
@@ -154,7 +154,7 @@ private:
 			if (!success)
 			{
 				glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-				std::cout << "	ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+				log_printf(log_level_e::LOG_INFO, "	ERROR::SHADER_COMPILATION_ERROR of type: %s\n%s\n -- --------------------------------------------------- -- \n",type.c_str(),infoLog);
 			}
 		}
 		else
@@ -163,7 +163,7 @@ private:
 			if (!success)
 			{
 				glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-				std::cout << "	ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+				log_printf(log_level_e::LOG_INFO, "	ERROR::PROGRAM_LINKING_ERROR of type: %s\n %s\n -- --------------------------------------------------- -- \n", type.c_str(), infoLog);
 			}
 		}
 	}

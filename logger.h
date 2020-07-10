@@ -41,6 +41,12 @@ void set_log_level(const enum log_level_e log_level);
 void log_message(const enum log_level_e log_level, const char* const message);
 
 /**
+ * Log an error. Similar to log_message.
+ * @param message is the message.
+ */
+void log_error(const char* const message);
+
+/**
  * Log a message using printf() syntax.
  * @param log_level is the log level associated with this message.
  * @param format is the message formatting string.

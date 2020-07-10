@@ -1,18 +1,66 @@
 #pragma once
+
 #ifndef RENDERER_H_
 #define RENDERER_H_
+
 #include "glad.h"
 #include "glfw3.h"
-#include <iostream>
-#include <vector>
 
+#include "logger.h"
 
-class Renderer {
-public:
+#include "Color.h"
 
-private:
+namespace Engine
+{
+	class Renderer {
+	public:
 
-	GLFWwindow* m_window;//Windows array
-};
+		static Renderer* Instance() {
+			static Renderer* instance;
+
+			if (!instance)
+				instance = new Renderer();
+
+			return instance;
+		}
+
+		int Init(const char* window_title = "Engine", bool fullscreen = false);
+
+		GLFWwindow* getWindow()const { return m_window; }
+
+		void ClearScreen(const Color& color) {
+			//Clearing screen
+			glClearColor(color.color_vect.r, color.color_vect.g, color.color_vect.b, 1.0f);
+			//glClearColor(.0f, 0.f, 0.f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		}
+
+		int getWindowSizeX()const;
+		int getWindowSizeY()const;
+
+	private:
+		//Variables-----------------------------------
+		GLFWwindow* m_window;//Window
+		GLFWmonitor* m_primaryMonitor;//Fullscreen monitor
+
+		bool m_fullscreen_mode;
+
+		//Methods-------------------------------------
+		Renderer() {
+			m_primaryMonitor = glfwGetPrimaryMonitor();
+			
+			if (!m_primaryMonitor)
+			{
+				log_error("ERROR::RENDERER::FAILED_TO_GET_PRIMARY_MONITOR	Won't be able to use fullscreen mode\n");
+			}
+		}
+
+		Renderer(Renderer const&) = delete;
+		Renderer& operator=(Renderer const&) = delete;
+
+		void setWindowSizeX(int value);
+		void setWindowSizeY(int value);
+	};
+}
 
 #endif

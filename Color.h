@@ -17,6 +17,9 @@ struct Color {
 	Color(glm::vec4 color) {
 		this->color_vect = color;
 	}
+	Color(glm::vec3 color) {
+		this->color_vect = glm::vec4(color.x, color.y, color.z, 1.0f);
+	}
 	Color() {
 		color_vect.r = 0;
 		color_vect.g = 0;
@@ -46,5 +49,13 @@ struct Color {
 	Color operator/(float a) { 
 		return glm::vec4(color_vect) / a;
 	}
+
 	glm::vec4 color_vect;
+
+	const static Color Black;
+	const static Color Grey;
+	const static Color White;
+	const static Color Red;
+	const static Color Green;
+	const static Color Blue;
 };
