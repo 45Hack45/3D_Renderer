@@ -3,6 +3,9 @@
 
 #include "include/glad.h"
 
+#include "logger.h"
+#include <glm/gtc/type_ptr.hpp>
+
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -170,3 +173,4 @@ private:
 };
 
 #endif
+

@@ -143,3 +143,5 @@ public:
 	glm::vec3 m_pos;
 	float m_linear, m_quadratic;
 };
+
+

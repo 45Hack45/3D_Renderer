@@ -21,8 +21,8 @@
 
 #include "LightSource.h"
 
-#define window_size_X 1920
-#define window_size_Y 1080
+#define window_size_X 400
+#define window_size_Y 300
 #define aRatio 1.f*window_size_X/window_size_Y
 #define window_size  window_size_X,window_size_Y
 
@@ -91,6 +91,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 	if (moveCam)
 		cam.ProcessMouseMovement(xoffset, yoffset);
+
+	//std::cout << xpos << ",	" << ypos << std::endl;
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -285,7 +287,7 @@ int test_render() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	Model mesh("./rcs/backpack/backpack.obj");
+	Test::Model mesh("./rcs/backpack/backpack.obj");
 
 	//Lights
 
@@ -377,7 +379,7 @@ int test_render() {
 
 				for (int i = 0; i < pointLights.size(); i++)
 				{
-					string lightNode = "Light_" + std::to_string(i);
+					std::string lightNode = "Light_" + std::to_string(i);
 					if (ImGui::TreeNode(lightNode.c_str()))
 					{
 						ImGui::ColorEdit3("Color", (float*)&pointLights[i].m_color.color_vect);
@@ -400,7 +402,7 @@ int test_render() {
 
 				for (int i = 0; i < spotLights.size(); i++)
 				{
-					string lightNode = "Light_" + std::to_string(i);
+					std::string lightNode = "Light_" + std::to_string(i);
 					if (ImGui::TreeNode(lightNode.c_str()))
 					{
 						ImGui::ColorEdit3("Color", (float*)&spotLights[i].m_color.color_vect);
@@ -440,3 +442,4 @@ int test_render() {
 
 	glfwTerminate();//Clear resources
 }
+

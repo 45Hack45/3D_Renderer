@@ -35,9 +35,7 @@ public:
 	glm::vec3 Up;
 	glm::vec3 Right;
 	glm::vec3 WorldUp;
-	// euler Angles
-	float Yaw;
-	float Pitch;
+
 	// camera options
 	float MovementSpeed;
 	float MouseSensitivity;
@@ -120,7 +118,31 @@ public:
 			Zoom = 45.0f;
 	}
 
+	void setEulerAngles(float yaw, float pitch) {
+		Yaw = yaw;
+		Pitch = pitch;
+		updateCameraVectors();
+	}
+	void setYaw(float yaw) {
+		Yaw = yaw;
+		updateCameraVectors();
+	}
+	void setPitch(float pitch) {
+		Pitch = pitch;
+		updateCameraVectors();
+	}
+
+	void rotate(float yaw, float pitch) {
+		Yaw += yaw;
+		Pitch += pitch;
+		updateCameraVectors();
+	}
+
 private:
+	// euler Angles
+	float Yaw;
+	float Pitch;
+
 	// calculates the front vector from the Camera's (updated) Euler Angles
 	void updateCameraVectors()
 	{
@@ -136,3 +158,4 @@ private:
 	}
 };
 #endif
+

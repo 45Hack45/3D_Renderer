@@ -54,3 +54,4 @@ void log_error(const char* const message);
 void log_printf(const enum log_level_e log_level, const char* const format, ...);
 
 #endif // LOGGER_H_
+

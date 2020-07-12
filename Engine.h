@@ -9,6 +9,7 @@
 #include "logger.h"
 #include "Renderer.h"
 #include "Input.h"
+#include "Model.h"
 
 namespace Engine
 {
@@ -32,12 +33,16 @@ namespace Engine
 
 		int Init(const char* projectPath, const char* projectName);
 
-		void mainLoop();
+		void Start();
 
+		void mainLoop();
+		Renderer* renderer;
 	private:
 		//Variables-----------------------------------
-		Renderer* renderer;
+		
 		Input::Input* input;
+
+		Model* m_model;
 
 		// timing
 		float deltaTime = 0.0f;	// time between current frame and last frame
@@ -59,3 +64,4 @@ namespace Engine
 }
 
 #endif
+

@@ -149,3 +149,5 @@ vec4 calculateSpotLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,c
 }
 
 
+
+

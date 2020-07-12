@@ -47,3 +47,5 @@ void log_printf(const enum log_level_e log_level, const char* const format, ...)
 
 	(void)fputs("\n", stderr);
 }
+
+

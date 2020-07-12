@@ -140,9 +140,12 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Asset.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Engine.h" />
@@ -160,6 +163,7 @@
     <ClInclude Include="include\imgui\imstb_truetype.h" />
     <ClInclude Include="include\khrplatform.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="KeyCode.hpp" />
     <ClInclude Include="LightSource.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="Mesh.h" />

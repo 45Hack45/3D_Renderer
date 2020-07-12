@@ -56,4 +56,10 @@ namespace Engine
 	void Renderer::setWindowSizeY(int value) {
 		m_window_size_Y = value;
 	}
+
+	float Renderer::getWindowAspectRatio()const {
+		return m_window_size_X / m_window_size_Y;
+	}
 }
+
+

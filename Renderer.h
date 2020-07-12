@@ -14,7 +14,7 @@ namespace Engine
 {
 	class Renderer {
 	public:
-
+		//Methods-------------------------------------
 		static Renderer* Instance() {
 			static Renderer* instance;
 
@@ -37,10 +37,13 @@ namespace Engine
 
 		int getWindowSizeX()const;
 		int getWindowSizeY()const;
+		float getWindowAspectRatio()const;
+
+		//Variables-----------------------------------
+		GLFWwindow* m_window;//Window
 
 	private:
 		//Variables-----------------------------------
-		GLFWwindow* m_window;//Window
 		GLFWmonitor* m_primaryMonitor;//Fullscreen monitor
 
 		bool m_fullscreen_mode;
@@ -64,3 +67,4 @@ namespace Engine
 }
 
 #endif
+

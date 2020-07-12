@@ -59,3 +59,4 @@ struct Color {
 	const static Color Green;
 	const static Color Blue;
 };
+
