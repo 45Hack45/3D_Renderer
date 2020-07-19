@@ -1,5 +1,6 @@
 #include "Model.h"
-
+#include "glad.h"
+#include "glfw3.h"
 namespace Engine
 {
     Model::Model(const std::string& modelPath, const std::string& modelName,bool flipUVs):Asset(modelPath,modelName)
@@ -17,6 +18,8 @@ namespace Engine
 
         log_printf(log_level_e::LOG_INFO, "Loading Model: %s", fileNameAndExtension().c_str());
 
+        float iniTime = glfwGetTime();
+
         // read file via ASSIMP
         Assimp::Importer importer;
 
@@ -31,9 +34,14 @@ namespace Engine
             return;
         }
 
+        float finTime = glfwGetTime();
+        std::cout << "Assimp Load time: " << finTime - iniTime << std::endl << std::endl;
+
         m_numMeshes = m_scene->mNumMeshes;
 
         m_meshes = new Mesh[m_numMeshes];
+
+        log_printf(log_level_e::LOG_DEBUG, "Num Meshes: %i", m_numMeshes);
 
         for (int j = 0; j < m_numMeshes; j++) {
 
@@ -48,6 +56,15 @@ namespace Engine
 
             m_totalVertices += mesh->mNumVertices;
             m_totalTriangles += mesh->mNumFaces;
+
+            aiMaterial* material = m_scene->mMaterials[mesh->mMaterialIndex];
+
+            /*log_printf(log_level_e::LOG_DEBUG, "    Mesh[%i].material.numProperties: %i", j, material->mNumProperties);
+
+            for (size_t i = 0; i < material->mNumProperties; i++)
+            {
+                log_printf(log_level_e::LOG_DEBUG, "        Property %i: \nProp Name: %s\nProp Value: %i", i, material->mProperties[i]->mKey.C_Str(), material->mProperties[i]->mData);
+            }*/
 
             // walk through each of the mesh's vertices
             for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -77,23 +94,31 @@ namespace Engine
                     vec.y = mesh->mTextureCoords[0][i].y;
                     vertex.TexCoords = vec;
                 }
-                else
+                else {
                     vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+                }
 
                 // tangent
-                vector.x = mesh->mTangents[i].x;
-                vector.y = mesh->mTangents[i].y;
-                vector.z = mesh->mTangents[i].z;
-                vertex.Tangent = vector;
+                if (mesh->mTangents) {
+                    vector.x = mesh->mTangents[i].x;
+                    vector.y = mesh->mTangents[i].y;
+                    vector.z = mesh->mTangents[i].z;
+                    vertex.Tangent = vector;
+                }
 
                 // bitangent
-                vector.x = mesh->mBitangents[i].x;
-                vector.y = mesh->mBitangents[i].y;
-                vector.z = mesh->mBitangents[i].z;
-                vertex.Bitangent = vector;
+                if (mesh->mBitangents) {
+                    vector.x = mesh->mBitangents[i].x;
+                    vector.y = mesh->mBitangents[i].y;
+                    vector.z = mesh->mBitangents[i].z;
+                    vertex.Bitangent = vector;
+                }
 
                 vertices.push_back(vertex);
             }
+
+            if (!mesh->mTextureCoords[0])
+                log_printf(log_level_e::LOG_INFO, "MESSAGE::MODEL:: TextureCoords not loaded:    Mesh %i     Model %s", j, fileName().c_str());
 
             //Triangles
             for (unsigned int i = 0; i < mesh->mNumFaces; i++)
@@ -108,7 +133,7 @@ namespace Engine
             m_meshes[j] = Mesh(vertices.data(), vertices.size(), indices.data(), indices.size());
         }
 
-        log_printf(log_level_e::LOG_DEBUG, "     Total Vertices: %i   Total Triangles: %i\n", m_totalVertices, m_totalTriangles);
+        log_printf(log_level_e::LOG_DEBUG, "    Total Vertices: %i   Total Triangles: %i\n", m_totalVertices, m_totalTriangles);
     
     }
 

@@ -12,76 +12,21 @@
 #include <iostream>
 #include "include/glm/glm.hpp"
 
+#include "Asset.h"
+
 class Shader
 {
 public:
-	
+
 	// constructor generates the shader on the fly
 	// ------------------------------------------------------------------------
-	Shader(const char* vertexPath, const char* fragmentPath)
-	{
+	Shader(const char* vertexPath, const char* fragmentPath, bool isFile = true);
 
-		// 1. retrieve the vertex/fragment source code from filePath
-		std::string vertexCode;
-		std::string fragmentCode;
-		std::ifstream vShaderFile;
-		std::ifstream fShaderFile;
-		// ensure ifstream objects can throw exceptions:
-		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		try
-		{
-			// open files
-			vShaderFile.open(vertexPath);
-			fShaderFile.open(fragmentPath);
-			std::stringstream vShaderStream, fShaderStream;
-			// read file's buffer contents into streams
-			vShaderStream << vShaderFile.rdbuf();
-			fShaderStream << fShaderFile.rdbuf();
-			// close file handlers
-			vShaderFile.close();
-			fShaderFile.close();
-			// convert stream into string
-			vertexCode = vShaderStream.str();
-			fragmentCode = fShaderStream.str();
-		}
-		catch (std::ifstream::failure& e)
-		{
-			perror("	ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ");
-		}
-		const char* vShaderCode = vertexCode.c_str();
-		const char* fShaderCode = fragmentCode.c_str();
-
-
-		// 2. compile shaders
-		unsigned int vertex, fragment;
-		// vertex shader
-		vertex = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertex, 1, &vShaderCode, NULL);
-		glCompileShader(vertex);
-		checkCompileErrors(vertex, "VERTEX");
-		// fragment Shader
-		fragment = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragment, 1, &fShaderCode, NULL);
-		glCompileShader(fragment);
-		checkCompileErrors(fragment, "FRAGMENT");
-		// shader Program
-		m_ID = glCreateProgram();
-		glAttachShader(m_ID, vertex);
-		glAttachShader(m_ID, fragment);
-		glLinkProgram(m_ID);
-		checkCompileErrors(m_ID, "PROGRAM");
-		// delete the shaders as they're linked into our program now and no longer necessary
-		glDeleteShader(vertex);
-		glDeleteShader(fragment);
-	}
-
-	//TODO:
 	// constructor generates the shader on the fly frome one single file
-	// ------------------------------------------------------------------------
-	Shader(const char* shaderPath) {
-		log_printf(log_level_e::LOG_INFO,"ERROR::SHADER::CONSTRUCTOR_NOT_IMPLEMENTED\n SHADER: %s", shaderPath);
-	}
+	// The convention is that every shader type start with: //#Begin_Type and ends with: //#End_Type
+	//Example: //#Begin_vert ... //#End_vert	//#Begin_frag ... //#End_frag
+	//Everything out of Begin...End won't be compiled
+	Shader(const char* shaderPath);
 
 	~Shader() {
 		glDeleteProgram(m_ID);//Free resources
@@ -113,7 +58,7 @@ public:
 	}
 	void setFloat(const std::string& name, float x, float y) const
 	{
-		glUniform2f(glGetUniformLocation(m_ID, name.c_str()), x,y);
+		glUniform2f(glGetUniformLocation(m_ID, name.c_str()), x, y);
 	}
 	void setFloat(const std::string& name, float x, float y, float z) const
 	{
@@ -141,6 +86,8 @@ public:
 		glUniform4f(glGetUniformLocation(m_ID, name.c_str()), value.x, value.y, value.z, value.w);
 	}
 
+	bool errorOnLoad = false;
+
 private:
 
 	unsigned int m_ID;
@@ -157,7 +104,7 @@ private:
 			if (!success)
 			{
 				glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-				log_printf(log_level_e::LOG_INFO, "	ERROR::SHADER_COMPILATION_ERROR of type: %s\n%s\n -- --------------------------------------------------- -- \n",type.c_str(),infoLog);
+				log_printf(log_level_e::LOG_INFO, "	ERROR::SHADER_COMPILATION_ERROR of type: %s\n%s\n -- --------------------------------------------------- -- \n", type.c_str(), infoLog);
 			}
 		}
 		else

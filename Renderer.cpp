@@ -58,7 +58,7 @@ namespace Engine
 	}
 
 	float Renderer::getWindowAspectRatio()const {
-		return m_window_size_X / m_window_size_Y;
+		return m_window_size_X / (1 + m_window_size_Y);
 	}
 }
 

@@ -21,8 +21,8 @@
 
 #include "LightSource.h"
 
-#define window_size_X 400
-#define window_size_Y 300
+#define window_size_X 800
+#define window_size_Y 600
 #define aRatio 1.f*window_size_X/window_size_Y
 #define window_size  window_size_X,window_size_Y
 
@@ -305,7 +305,7 @@ int test_render() {
 	pointLights.push_back(pointLRed);
 
 	//SpotLight
-	LightSource_Spot spot1(Color(1.f, 1.f, 1.f), 5.f, glm::vec3(0, 10, 2), glm::vec3(0, -10, -1.957), .026, 50, 0.14, 0.07);
+	LightSource_Spot spot1(Color(1.f, 1.f, 1.f), 5.f, glm::vec3(0, 10, 2), glm::vec3(0, -10, -1.957), .026, .03, 0.14, 0.07);
 
 	spotLights.push_back(spot1);
 
@@ -419,7 +419,10 @@ int test_render() {
 						ImGui::Spacing();
 
 						ImGui::Spacing(); ImGui::SliderFloat("Inner Angle", &(spotLights[i].m_angle), 0, 1);
-						ImGui::Spacing(); ImGui::SliderFloat("Outer Angle", &(spotLights[i].m_outerAngle), 0, 1);
+						if (spotLights[i].m_outerAngle < spotLights[i].m_angle)
+							spotLights[i].m_outerAngle = spotLights[i].m_angle;
+							
+						ImGui::Spacing(); ImGui::SliderFloat("Outer Angle", &(spotLights[i].m_outerAngle), spotLights[i].m_angle, .5f);
 
 						ImGui::Spacing();
 

@@ -13,7 +13,7 @@ namespace Engine
 	{
 	public:
 
-		Asset(std::string file, std::string name) {
+		Asset(const std::string& file, const std::string& name) {
 			filePath = file;
 			assetName = name;
 		}
@@ -46,7 +46,7 @@ namespace Engine
 		
 		}
 		std::string fileName() {
-			size_t separatorIndex = filePath.find_last_of('/');
+			size_t separatorIndex = filePath.find_last_of('/')+1;
 			size_t extensionIndex = filePath.find_last_of('.');
 
 			if (separatorIndex == std::string::npos)
@@ -55,7 +55,7 @@ namespace Engine
 			if (extensionIndex == std::string::npos)
 				extensionIndex = (size_t)filePath.size();
 
-			return filePath.substr(separatorIndex, extensionIndex);
+			return filePath.substr(separatorIndex, extensionIndex - separatorIndex);
 		}
 		std::string fileExtension() {
 			size_t separatorIndex = filePath.find_last_of('.');
@@ -68,14 +68,14 @@ namespace Engine
 			return filePath.substr(separatorIndex, filePath.size());
 		}
 		std::string fileNameAndExtension() {
-			size_t separatorIndex = filePath.find_last_of('/');
+			size_t separatorIndex = filePath.find_last_of('/')+1;
 
 			if (separatorIndex == std::string::npos) {
 				log_printf(log_level_e::LOG_INFO, "ERROR::ASSET::FILE_DIRECTORY_NOT_FOUND:: %s", filePath);
 				return "";
 			}
 
-			return filePath.substr(separatorIndex, filePath.size());
+			return filePath.substr(separatorIndex, filePath.size()- separatorIndex);
 
 		}
 	};

@@ -55,7 +55,8 @@ void main()
     //Ambient light
     vec4 ambient = ambientLight * ambientColor;
 
-    vec3 lightDir= normalize(lightsrc_directional_direction);
+    vec3 lightDir= normalize(lightsrc_directional_direction);//directional light direction
+
     vec4 lightColor = lightsrc_directional_color;
     float lightIntensity = lightsrc_directional_intensity;
     vec3 normal = normalize(Normal);
@@ -68,14 +69,24 @@ void main()
 
 
     //Directional Light Specular
+    /*
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, normal);
 
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    
     vec4 specular = spec * lightColor * lightIntensity;
+    */
+
+    vec3 viewDir    = normalize(viewPos - FragPos);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), 255);
+    vec4 specular = lightColor * spec * lightIntensity;
 
 
-    //Other Light
+
+    //Multiple Light
     vec4 pointLight = vec4(.0f);
     vec4 spotLight = vec4(.0f);
 
@@ -127,11 +138,10 @@ vec4 calculateSpotLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,c
 
     //Spot cutoff
     float theta = dot(lightDir, normalize(-light.direction));
+    float epsilon   = light.angle-light.outerAngle;
+    float intensity = clamp((theta - light.outerAngle) / epsilon, 0.0, 1.0);    
 
-    if(theta < light.angle) 
-    {// not do lighting calculations
-      return vec4(.0f);
-    }
+
 
     //Diffuse
     float NDotL = max(dot(normal, lightDir), 0.0);
@@ -145,7 +155,7 @@ vec4 calculateSpotLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,c
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     vec4 specular = spec * light.color;
 
-    return (diffuse + specular) * light.intensity * attenuation;
+    return (diffuse + specular) * light.intensity * attenuation * intensity;
 }
 
 

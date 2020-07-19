@@ -6,6 +6,7 @@
 #include "glad.h"
 
 #include "logger.h"
+#include "Shader.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -59,6 +60,11 @@ public:
 	int width()const { return m_width; }
 	int height()const { return m_height; }
 	int nChanels()const { return m_nChannels; }
+
+	void bind(const Shader& shader, const char uniformName) {
+	
+	}
+
 private:
 	unsigned int m_ID;
 	int m_width, m_height, m_nChannels;

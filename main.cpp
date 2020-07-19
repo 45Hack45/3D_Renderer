@@ -66,7 +66,7 @@ int testMouseInput() {
 }*/
 
 int main() {
-	set_log_level(log_level_e::LOG_INFO);
+	set_log_level(log_level_e::LOG_DEBUG);
 
 	Engine::Engine* engine = Engine::Engine::Instance();
 

@@ -28,6 +28,12 @@
     <Filter Include="Archivos de origen\Util">
       <UniqueIdentifier>{24e334e5-635e-4910-81f1-c4ecffc51b80}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Managers">
+      <UniqueIdentifier>{85c51cbd-0650-48f9-8ddd-e46c9735f4fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Managers">
+      <UniqueIdentifier>{49a08d54-434c-4c6c-8ae9-69f768eef74e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -74,6 +80,12 @@
     </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="IO.cpp">
+      <Filter>Archivos de origen\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -149,9 +161,6 @@
     <ClInclude Include="Input.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="IO.hpp">
-      <Filter>Archivos de encabezado\Util</Filter>
-    </ClInclude>
     <ClInclude Include="TestRender.hpp">
       <Filter>Archivos de encabezado\Util</Filter>
     </ClInclude>
@@ -160,6 +169,18 @@
     </ClInclude>
     <ClInclude Include="KeyCode.hpp">
       <Filter>Archivos de encabezado\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.hpp">
+      <Filter>Archivos de encabezado\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="IO.h">
+      <Filter>Archivos de encabezado\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.hpp">
+      <Filter>Archivos de encabezado\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelManager.hpp">
+      <Filter>Archivos de encabezado\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +194,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\PhongShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\PhongShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\UnlitShader.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

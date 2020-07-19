@@ -10,9 +10,14 @@
 #include "Renderer.h"
 #include "Input.h"
 #include "Model.h"
+#include "LightSource.h"
+#include "ShaderManager.hpp"
+#include "TextureManager.hpp"
+#include "ModelManager.hpp"
 
 namespace Engine
 {
+	const int _PI = 3.14159265359;
 
 	//Important: First call Instance() before doing anything wiht the class
 	class Engine
@@ -36,21 +41,29 @@ namespace Engine
 		void Start();
 
 		void mainLoop();
-		Renderer* renderer;
+		
 	private:
 		//Variables-----------------------------------
-		
+		Renderer* renderer;
 		Input::Input* input;
+		ShaderManager* shaderManager;
+		TextureManager* textureManager;
+		ModelManager* modelManager;
 
 		Model* m_model;
+
+		LightSource_Directional m_directionalLight;
+		std::vector<LightSource_Point> m_pointLights;
+		std::vector<LightSource_Spot> m_spotLights;
 
 		// timing
 		float deltaTime = 0.0f;	// time between current frame and last frame
 		float lastFrame = 0.0f;
 
 		//Methods-------------------------------------
-		Engine() {
-
+		Engine(): m_directionalLight(Color::White, 1, glm::vec3(0,1,0)){
+			m_pointLights.reserve(10);
+			m_spotLights.reserve(10);
 		}
 
 		Engine(Engine const&) = delete;
@@ -60,6 +73,8 @@ namespace Engine
 		{
 			log_printf(log_level_e::LOG_INFO,"ERROR::GLFW	%d: %s\n", error, description);
 		}
+
+		void sendLightInfo2Shader(Shader& shader, const std::vector<LightSource_Point>& pointLights, std::vector<LightSource_Spot>& spotLights, const LightSource_Directional& dirLight);
 	};
 }
 
