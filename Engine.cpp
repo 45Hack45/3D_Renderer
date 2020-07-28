@@ -120,7 +120,7 @@ namespace Engine
 		//m_model = new Model("./rcs/sponza/Sponza.gltf", "Backpack");
 
 		m_model = modelManager->getModel("Sponza",false);//Geting and loading model
-		m_model->loadFile(.1f);
+		m_model->loadFile(.01f);
 
 		//IO::printProjectFiles();
 	}
