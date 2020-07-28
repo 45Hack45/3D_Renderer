@@ -1,3 +1,7 @@
+
+//#Begin_prop
+//#End_prop
+
 //#Begin_vert
 
 #version 330 core

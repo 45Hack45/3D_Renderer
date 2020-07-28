@@ -1,6 +1,15 @@
 #include "Shader.h"
+#include <stdio.h>
 
-Shader::Shader(const char* vertexShader, const char* fragmentShader, bool isFile)
+#define _vertBegin	"//#Begin_vert"
+#define _vertEnd	"//#End_vert"
+#define _fragBegin	"//#Begin_frag"
+#define _fragEnd	"//#End_frag"
+#define _propBegin	"//#Begin_prop"
+#define _propEnd	"//#End_prop"
+
+
+Shader::Shader(const char* vertexShader, const char* fragmentShader, bool isFile) : Asset(vertexShader, vertexShader)
 {
 
 	// 1. retrieve the vertex/fragment source code from filePath
@@ -41,10 +50,16 @@ Shader::Shader(const char* vertexShader, const char* fragmentShader, bool isFile
 
 		vShaderCode = vertexCode.c_str();
 		fShaderCode = fragmentCode.c_str();
+
+		getProperties(vertexCode);
+		getProperties(fragmentCode);
 	}
 	else {
 		vShaderCode = vertexShader;
 		fShaderCode = fragmentShader;
+
+		getProperties(vertexShader);
+		getProperties(fragmentShader);
 	}
 
 
@@ -72,10 +87,10 @@ Shader::Shader(const char* vertexShader, const char* fragmentShader, bool isFile
 	glDeleteShader(fragment);
 }
 
-Shader::Shader(const char* shaderPath) {
+void Shader::loadFile() {
 	//log_printf(log_level_e::LOG_INFO, "ERROR::SHADER::CONSTRUCTOR_NOT_IMPLEMENTED\n SHADER: %s", shaderPath);
 
-	log_printf(log_level_e::LOG_DEBUG, "\nLoading Shader: %s", shaderPath);
+	log_printf(log_level_e::LOG_DEBUG, "\nLoading Shader: %s", filePath.c_str());
 
 	// 1. retrieve the vertex/fragment source code from filePath
 	std::string vertexCode;
@@ -89,7 +104,7 @@ Shader::Shader(const char* shaderPath) {
 	try
 	{
 		// open files
-		shaderFile.open(shaderPath);
+		shaderFile.open(filePath);
 		std::stringstream shaderStream;
 
 		// read file's buffer contents into streams
@@ -102,8 +117,8 @@ Shader::Shader(const char* shaderPath) {
 		shaderCode = shaderStream.str();
 
 		//vertex Shader
-		size_t vertOffset = shaderCode.find("//#Begin_vert");
-		size_t vertEndOffset = shaderCode.find("//#End_vert");
+		size_t vertOffset = shaderCode.find(_vertBegin);
+		size_t vertEndOffset = shaderCode.find(_vertEnd);
 		size_t vertLenght = vertEndOffset - vertOffset;
 
 		if (vertOffset != std::string::npos && vertEndOffset == std::string::npos)
@@ -112,8 +127,8 @@ Shader::Shader(const char* shaderPath) {
 			vertexCode = shaderCode.substr(vertOffset, vertLenght);
 
 		//Fragment shader
-		size_t fragOffset = shaderCode.find("//#Begin_frag");
-		size_t fragEndOffset = shaderCode.find("//#End_frag");
+		size_t fragOffset = shaderCode.find(_fragBegin);
+		size_t fragEndOffset = shaderCode.find(_fragEnd);
 		size_t fragLenght = fragEndOffset - fragOffset;
 
 		if (fragOffset != std::string::npos && fragEndOffset == std::string::npos) {
@@ -128,8 +143,12 @@ Shader::Shader(const char* shaderPath) {
 		perror("	ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ");
 		errorOnLoad = true;
 	}
+
 	const char* vShaderCode = vertexCode.c_str();
 	const char* fShaderCode = fragmentCode.c_str();
+
+	getProperties(shaderCode);
+
 
 	// 2. compile shaders
 	unsigned int vertex, fragment;
@@ -145,7 +164,7 @@ Shader::Shader(const char* shaderPath) {
 	checkCompileErrors(fragment, "FRAGMENT");
 	// shader Program
 	m_ID = glCreateProgram();
-	log_printf(log_level_e::LOG_DEBUG, "Shader Program ID: %i\n", m_ID);
+	log_printf(log_level_e::LOG_DEBUG, "	Shader Program ID: %i\n", m_ID);
 	glAttachShader(m_ID, vertex);
 	glAttachShader(m_ID, fragment);
 	glLinkProgram(m_ID);
@@ -154,3 +173,46 @@ Shader::Shader(const char* shaderPath) {
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
 }
+
+void Shader::getProperties(const std::string& shaderCode) {
+	
+	size_t propBegin, propEnd;
+
+	propBegin = shaderCode.find(_propBegin);
+
+	if (propBegin == shaderCode.npos)
+	{//Propeties not found
+		log_message(log_level_e::LOG_DEBUG, "	Shader Properties not found.");
+		hasPropeties = false;
+		return;
+	}
+
+	propEnd = shaderCode.find(_propEnd);
+
+	if (propEnd == shaderCode.npos)
+	{
+		log_error("ERROR::SHADER::PROPERTIES: //#End_prop not found");
+		hasPropeties = false;
+		return;
+	}
+
+	propBegin += sizeof(_propBegin);//offseting to end of _propBegin to avoid including _propBegin in the propertiesCode
+
+	std::string propertiesCode = shaderCode.substr(propBegin, propEnd - propBegin);
+	std::stringstream ss(propertiesCode);
+	std::string to;
+
+	if (propertiesCode.size() > 0)
+	{
+		while (std::getline(ss, to, '\n')) {
+
+			shaderProperties.push_back(to);
+		}
+		hasPropeties = true;
+	}
+	else {
+		hasPropeties = false;
+	}
+	
+}
+

@@ -1,3 +1,8 @@
+//#Begin_prop
+(vec4       dye_color           myColor)
+(sampler2D  texture_diffuse1    albedoTexture)
+//#End_prop
+
 //#Begin_vert
 
 #version 330 core
@@ -25,12 +30,13 @@ out vec4 FragColor;
 
 in vec2 TexCoord;
 
+vec4 dye_color = vec4(1.f);
+
 uniform sampler2D texture_diffuse1;
-uniform sampler2D texture_diffuse2;
 
 void main()
 {
-    FragColor = texture(texture_diffuse1, TexCoord);
+    FragColor = texture(texture_diffuse1, TexCoord) * dye_color;
 }
 
 //#End_frag

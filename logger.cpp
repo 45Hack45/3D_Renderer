@@ -48,4 +48,27 @@ void log_printf(const enum log_level_e log_level, const char* const format, ...)
 	(void)fputs("\n", stderr);
 }
 
+void log_printf_info(const char* const format, ...) {
+	va_list ap;
 
+	va_start(ap, format);
+	(void)vfprintf(stderr, format, ap);
+	va_end(ap);
+
+	(void)fputs("\n", stderr);
+}
+
+void log_printf_debug(const char* const format, ...) {
+
+	if (log_level_e::LOG_DEBUG > current_log_level) {
+		return;
+	}
+
+	va_list ap;
+
+	va_start(ap, format);
+	(void)vfprintf(stderr, format, ap);
+	va_end(ap);
+
+	(void)fputs("\n", stderr);
+}

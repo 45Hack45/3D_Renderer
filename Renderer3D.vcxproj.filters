@@ -34,6 +34,18 @@
     <Filter Include="Archivos de origen\Managers">
       <UniqueIdentifier>{49a08d54-434c-4c6c-8ae9-69f768eef74e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Components">
+      <UniqueIdentifier>{7e1cd03f-d083-4f76-b049-50f3cec55370}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Components">
+      <UniqueIdentifier>{90eaff92-e045-4576-b88b-558c1050de2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EngineProject">
+      <UniqueIdentifier>{f990dfc0-72f5-4f41-adeb-fd67a7177b27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EngineProject\Shaders">
+      <UniqueIdentifier>{81bad72d-7d62-45ba-937a-965a4913a922}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -86,6 +98,24 @@
     </ClCompile>
     <ClCompile Include="IO.cpp">
       <Filter>Archivos de origen\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Archivos de origen\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshRenderer.cpp">
+      <Filter>Archivos de origen\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +212,24 @@
     <ClInclude Include="ModelManager.hpp">
       <Filter>Archivos de encabezado\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshRenderer.h">
+      <Filter>Archivos de encabezado\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Archivos de encabezado\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialManager.hpp">
+      <Filter>Archivos de encabezado\Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\UnlitShader.vert">
@@ -201,6 +249,24 @@
     </None>
     <None Include="Shaders\UnlitShader.glsl">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="EngineProject\Shaders\PhongShader.frag">
+      <Filter>EngineProject\Shaders</Filter>
+    </None>
+    <None Include="EngineProject\Shaders\PhongShader.glsl">
+      <Filter>EngineProject\Shaders</Filter>
+    </None>
+    <None Include="EngineProject\Shaders\PhongShader.vert">
+      <Filter>EngineProject\Shaders</Filter>
+    </None>
+    <None Include="EngineProject\Shaders\UnlitShader.frag">
+      <Filter>EngineProject\Shaders</Filter>
+    </None>
+    <None Include="EngineProject\Shaders\UnlitShader.glsl">
+      <Filter>EngineProject\Shaders</Filter>
+    </None>
+    <None Include="EngineProject\Shaders\UnlitShader.vert">
+      <Filter>EngineProject\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

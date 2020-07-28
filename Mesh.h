@@ -23,7 +23,12 @@ struct Vertex {
     // bitangent
     glm::vec3 Bitangent;
 };
-
+struct BoundingBox
+{
+    glm::vec3 min;
+    glm::vec3 max;
+    glm::vec3 center;
+};
 namespace Engine
 {
     class Mesh
@@ -43,6 +48,7 @@ namespace Engine
 
         unsigned int VAO;
 
+        BoundingBox bBox;
 
     private:
         // render data 

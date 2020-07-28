@@ -53,5 +53,18 @@ void log_error(const char* const message);
  */
 void log_printf(const enum log_level_e log_level, const char* const format, ...);
 
+/**
+ * Log a message using printf() syntax.
+ * the log level associated with this message is INFO
+ * @param format is the message formatting string.
+ */
+void log_printf_info(const char* const format, ...);
+/**
+ * Log a message using printf() syntax.
+ * the log level associated with this message is INFO
+ * @param format is the message formatting string.
+ */
+void log_printf_debug(const char* const format, ...);
+
 #endif // LOGGER_H_
 

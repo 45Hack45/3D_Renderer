@@ -33,8 +33,12 @@ namespace Engine
 
 		void AddShader(const std::string& shaderName, const std::string& shaderPath, bool loadShader = false) {
 			shadersPath[shaderName] = shaderPath;
-			if (loadShader) 
-				shaders[shaderName] = new Shader(shadersPath[shaderName].c_str());//load Shader
+			if (loadShader)
+				shaders[shaderName] = new Shader(shaderName, shadersPath[shaderName]);//load Shader
+		}
+		void AddShader(const std::string& shaderName, Shader* shader) {
+			shadersPath[shaderName] = shader->filePath;
+			shaders[shaderName] = shader;
 		}
 
 		Shader* getShader(const std::string& shaderName) {
@@ -47,10 +51,11 @@ namespace Engine
 					log_error("ERROR::SHADER_MANAGER::Shader file not found.");
 					shadersPath[shaderName] = "_ERROR_SHADER";	
 					shaders[shaderName] = _ErrorShader;
+					return nullptr;
 				}
 				else {
 					//Loading shader
-					shaders[shaderName] = new Shader(shadersPath[shaderName].c_str());
+					shaders[shaderName] = new Shader(shadersPath[shaderName], shaderName);
 				}
 			}
 
@@ -84,6 +89,8 @@ namespace Engine
 
 		const char* _ErrorShaderVertCode =
 			"#version 330 core"
+			"\n//#Begin_prop"
+			"\n//#End_prop"
 			"\n layout(location = 0) in vec3 aPos;"
 			"\n uniform mat4 model; uniform mat4 view; uniform mat4 projection;"
 			"\n void main(){"
@@ -92,6 +99,8 @@ namespace Engine
 
 		const char* _ErrorShaderFragCode =
 			"   #version 330 core"
+			"\n//#Begin_prop"
+			"\n//#End_prop"
 			"\n out vec4 FragColor;"
 			"\n void main(){FragColor = vec4(51, 255, 51, 255)/255;}";
 	};

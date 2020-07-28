@@ -1,3 +1,4 @@
+#pragma once
 #ifndef Texture_H
 #define Texture_H
 
@@ -7,46 +8,23 @@
 
 #include "logger.h"
 #include "Shader.h"
+#include "Asset.h"
 
-#define STB_IMAGE_IMPLEMENTATION
+//#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-class Texture
+class Texture: Engine::Asset
 {
 public:
-	Texture(const char* imagePath, GLint imageFormat = GL_RGB,bool flipYImage = true, bool useMipmap = true) {
+	Texture(const char* imagePath, GLint imageFormat = GL_RGB,bool flipYImage = true, bool useMipmap = true):Asset(imagePath, imagePath) {
+		m_flipYImage = flipYImage;
+		m_format = imageFormat;
+		m_useMipmap = useMipmap;
 
-		glGenTextures(1, &m_ID);
-
-		stbi_set_flip_vertically_on_load(flipYImage);
-
-		m_image_data = stbi_load(imagePath, &m_width, &m_height, &m_nChannels, 0);//Load image and fill width,height and nrChannels
-
-		log_printf(LOG_INFO, "Loading image: %s", imagePath);
-
-		glBindTexture(GL_TEXTURE_2D, m_ID);
-		parameters(GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR);//Default texture config. Wrap: repeat	Filter: linear
-
-		//std::cout << m_nChannels << std::endl;
-
-		if (m_image_data)
-		{
-			log_printf(LOG_DEBUG, "	Dimensions:	%ix%i\n	numChanels:	%i", m_width, m_height, m_nChannels);
-
-			//Assign image to texture
-			if(m_nChannels == 3)
-				glTexImage2D(GL_TEXTURE_2D, 0, imageFormat, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_image_data);
-			else if (m_nChannels == 4)
-				if(imageFormat == GL_RGB)
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_image_data);
-
-			if(useMipmap) glGenerateMipmap(GL_TEXTURE_2D);//Automatically generate mipmaps
-		}else {
-			std::cout << "	ERROR::TEXTURE::FILE_NOT_SUCCESFULLY_READ: " << imagePath << std::endl;
-		}
-
-		stbi_image_free(m_image_data);//free resources
+		loadFile();
 	}
+
+	void loadFile();
 
 	void parameters(GLint hWrap, GLint vWrap, GLint hFilter, GLint vFilter) {
 		glBindTexture(GL_TEXTURE_2D, m_ID);
@@ -60,15 +38,25 @@ public:
 	int width()const { return m_width; }
 	int height()const { return m_height; }
 	int nChanels()const { return m_nChannels; }
+	GLint format()const { return m_format; }
 
-	void bind(const Shader& shader, const char uniformName) {
-	
+	bool imageYFliped()const { return m_flipYImage; }
+
+	//Binds the texture to a textureUnit of a binded shader.
+	//Alert: Make shure to bid shader befor calling this method
+	void bind(int textureUnit = 0) {
+		glActiveTexture(GL_TEXTURE0 + textureUnit); // activate the texture unit first before binding texture
+		glBindTexture(GL_TEXTURE_2D, m_ID);
 	}
 
 private:
 	unsigned int m_ID;
 	int m_width, m_height, m_nChannels;
 	unsigned char* m_image_data;
+
+	bool m_flipYImage;
+	GLint m_format;
+	bool m_useMipmap;
 };
 
 #endif

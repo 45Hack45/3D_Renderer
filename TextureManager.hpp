@@ -37,28 +37,24 @@ namespace Engine
 				textures[textureName] = new Texture(texturesPath[textureName].c_str());//load texture
 		}
 
-		Texture* getTexture(const std::string& textureName) {
+		Texture* getTexture(const std::string& textureName, bool flipY = true) {
 			if (textures.find(textureName) == textures.end())
-			{//Shader not found
+			{//Texture not found
 
-				//Trying to load the shader
+				//Trying to load the texture
 				if (texturesPath.find(textureName) == texturesPath.end()) {
-					//Shader path not found
+					//texture path not found
 					log_error("ERROR::Texture_MANAGER::Texture file not found.");
-					texturesPath[textureName] = "_ERROR_Texture";	
+					texturesPath[textureName] = "_ERROR_Texture";
+					return nullptr;
 				}
 				else {
-					//Loading shader
-					textures[textureName] = new Texture(texturesPath[textureName].c_str());
+					//Loading texture
+					textures[textureName] = new Texture(texturesPath[textureName].c_str(), GL_RGB, flipY);
 				}
 			}
-
 			return textures[textureName];
 		}
-
-		/*const Shader& operator[](const std::string& shaderName) {
-			return getShader(shaderName);
-		}*/
 
 		//Variables-----------------------------------
 

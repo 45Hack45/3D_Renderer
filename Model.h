@@ -23,34 +23,43 @@
 #include "Asset.h"
 
 
+
+
 namespace Engine
 {
-    class Model: Asset
+    class Model: public Asset
     {
     public:
-        Model(const std::string& modelPath, const std::string& modelName, bool flipUVs = true);
+        Model(const std::string& modelPath, const std::string& modelName = "", bool flipUVs = true);
         ~Model();
 
-        void loadFile();
+        void realeseLoadingResources() {
+            delete importer;
+        }
 
+        void loadFile(float scaleFactor = 1.f);
+
+        //Draws all the model meshes
         void Draw()
         {
 
             for (unsigned int i = 0; i < m_numMeshes; i++)
+                //          mesh
                 m_meshes[i].Draw();
         }
 
         const aiScene* m_scene;
-
         Mesh* m_meshes;
         unsigned int m_numMeshes;
+
+        BoundingBox bBox;
 
         bool m_flipUvs;
 
         int m_totalVertices = 0;
         int m_totalTriangles = 0;
     private:
-
+        Assimp::Importer* importer;
 
     };
 }

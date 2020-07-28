@@ -1,20 +1,24 @@
+#pragma once
+
 #ifndef SHADER_H
 #define SHADER_H
 
 #include "include/glad.h"
 
 #include "logger.h"
+
+#include "include/glm/glm.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include "include/glm/glm.hpp"
+#include <vector>
 
 #include "Asset.h"
 
-class Shader
+class Shader : public Engine::Asset
 {
 public:
 
@@ -26,7 +30,13 @@ public:
 	// The convention is that every shader type start with: //#Begin_Type and ends with: //#End_Type
 	//Example: //#Begin_vert ... //#End_vert	//#Begin_frag ... //#End_frag
 	//Everything out of Begin...End won't be compiled
-	Shader(const char* shaderPath);
+	Shader(const char* shaderPath): Asset(shaderPath, shaderPath) {
+		loadFile();
+	}
+
+	Shader(const std::string& shaderPath, const std::string& shaderName): Asset(shaderPath,shaderName) {//Constructor for the manager
+		loadFile();
+	}
 
 	~Shader() {
 		glDeleteProgram(m_ID);//Free resources
@@ -34,9 +44,11 @@ public:
 
 	unsigned int ID()const { return m_ID; }
 
+	void loadFile();
+
 	// activate the shader
 	// ------------------------------------------------------------------------
-	void use()
+	void use()const
 	{
 		glUseProgram(m_ID);
 	}
@@ -44,7 +56,7 @@ public:
 	// ------------------------------------------------------------------------
 	void setBool(const std::string& name, bool value) const
 	{
-		glUniform1i(glGetUniformLocation(m_ID, name.c_str()), (int)value);
+		glUniform1i(glGetUniformLocation(m_ID, name.c_str()), (value) ? 1 : 0);
 	}
 	// ------------------------------------------------------------------------
 	void setInt(const std::string& name, int value) const
@@ -88,6 +100,9 @@ public:
 
 	bool errorOnLoad = false;
 
+	bool hasPropeties = false;
+	std::vector<std::string> shaderProperties;
+
 private:
 
 	unsigned int m_ID;
@@ -117,6 +132,9 @@ private:
 			}
 		}
 	}
+
+	void getProperties(const std::string& shaderCode);
+
 };
 
 #endif

@@ -70,10 +70,11 @@ int main() {
 
 	Engine::Engine* engine = Engine::Engine::Instance();
 
-	int error = engine->Init("C:/Users/Hack45/source/repos/Renderer3D/EngineProject", "Test_Project");
+	int error = engine->Init("./EngineProject", "Test_Project");
 
 	if (error < 0)
 	{
+		system("pause");
 		return error;
 	}
 

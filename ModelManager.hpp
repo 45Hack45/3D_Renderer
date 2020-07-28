@@ -47,7 +47,8 @@ namespace Engine
 				if (modelsPath.find(modelName) == modelsPath.end()) {
 					//Shader path not found
 					log_error("ERROR::SHADER_MANAGER::Shader file not found.");
-					modelsPath[modelName] = "_ERROR_MODEL";	
+					modelsPath[modelName] = "_ERROR_MODEL";
+					return nullptr;
 				}
 				else {
 					//Loading shader

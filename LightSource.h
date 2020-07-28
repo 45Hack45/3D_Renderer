@@ -77,6 +77,7 @@ public:
 		m_pos = position;
 		m_dir = direction;
 		m_angle = angle;
+		m_outerAngle = outerAngle;
 		m_linear = 0.0014f;
 		m_quadratic = 0.000007f;
 	};

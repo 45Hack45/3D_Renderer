@@ -1,4 +1,15 @@
-//#Begin_vert
+
+//#Begin_prop
+(int        use_Transparency    tranparency)
+(vec4       dye_color           myColor)
+(float      specular_shinines   shinines)
+(float      specular_intensity  specularIntensity)
+(sampler2D  texture_diffuse1    albedoTexture)
+//#End_prop
+
+
+
+//#Begin_vert----------------------------------------------------------------------------
 
 #version 330 core
 layout (location = 0) in vec3 aPos;
@@ -30,17 +41,12 @@ void main()
 
 
 
-//#Begin_frag
+
+//#Begin_frag----------------------------------------------------------------------------
 
 #version 330 core
 
 #define MAX_LIGHTS 10
-
-out vec4 FragColor;
-
-in vec2 TexCoord;
-in vec3 Normal;
-in vec3 FragPos;
 
 struct SpotLight{
     vec4 color;
@@ -58,14 +64,24 @@ struct PointLight{
     float linear,quadratic;
 };
 
+out vec4 FragColor;
+
+in vec2 TexCoord;
+in vec3 Normal;
+in vec3 FragPos;
 
 uniform vec3 viewPos;
 
 uniform sampler2D texture_diffuse1;
-uniform sampler2D texture_diffuse2;
+
+uniform vec4 dye_color = vec4(1.f);
+uniform int use_Transparency = 1;
 
 uniform float ambientLight;
 uniform vec4 ambientColor;
+
+uniform float specular_shinines = 32.f;
+uniform float specular_intensity = 1.f;
 
 
 uniform vec3 lightsrc_directional_direction;
@@ -77,7 +93,6 @@ uniform SpotLight spotLights[MAX_LIGHTS];
 uniform int nPointLights;
 uniform int nSpotLights;
 
-
 vec4 calculatePointLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,const PointLight light);
 vec4 calculateSpotLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,const SpotLight light);
 
@@ -85,6 +100,9 @@ void main()
 {
     //Albedo
     vec4 albedo = texture(texture_diffuse1, TexCoord);
+
+    if(albedo.a == 0.0f)
+        discard;
 
     //Ambient light
     vec4 ambient = ambientLight * ambientColor;
@@ -103,20 +121,20 @@ void main()
 
 
     //Directional Light Specular
-    /*
-    vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, normal);
-
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     
-    vec4 specular = spec * lightColor * lightIntensity;
-    */
+//    vec3 viewDir = normalize(viewPos - FragPos);
+//    vec3 reflectDir = reflect(-lightDir, normal);
+//
+//    float spec = pow(max(dot(viewDir, reflectDir), 0.0), specular_shinines);
+//    
+//    vec4 specular = spec * lightColor * lightIntensity;
+    
 
     vec3 viewDir    = normalize(viewPos - FragPos);
     vec3 halfwayDir = normalize(lightDir + viewDir);
 
-    float spec = pow(max(dot(normal, halfwayDir), 0.0), 255);
-    vec4 specular = lightColor * spec * lightIntensity;
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), specular_shinines);
+    vec4 specular = spec * lightColor * lightIntensity * specular_intensity;
 
 
 
@@ -132,7 +150,7 @@ void main()
         spotLight += calculateSpotLightPhong( viewPos,FragPos, normal, spotLights[i]);
     }
 
-    FragColor = albedo * (ambient + diffuse + specular + pointLight + spotLight) ;
+    FragColor = dye_color * albedo * (ambient + diffuse + specular + pointLight + spotLight) ;
     //FragColor = vec4(pointLight);
 }
 
@@ -152,10 +170,10 @@ vec4 calculatePointLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,
 
     //Specular
     vec3 viewDir = normalize(cam_position - frag_position);
-    vec3 reflectDir = reflect(-lightDir, normal);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
 
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-    vec4 specular = spec * light.color;
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), specular_shinines);
+    vec4 specular = spec * light.color * light.intensity  * specular_intensity;
 
     return (diffuse + specular) * light.intensity * attenuation;
 }
@@ -173,7 +191,7 @@ vec4 calculateSpotLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,c
     //Spot cutoff
     float theta = dot(lightDir, normalize(-light.direction));
     float epsilon   = light.angle-light.outerAngle;
-    float intensity = clamp((theta - light.outerAngle) / epsilon, 0.0, 1.0);    
+    float intensity = clamp((theta - light.outerAngle) / epsilon, 0.0, 1.0);
 
 
 
@@ -184,10 +202,10 @@ vec4 calculateSpotLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,c
 
     //Specular
     vec3 viewDir = normalize(cam_position - frag_position);
-    vec3 reflectDir = reflect(-lightDir, normal);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
 
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-    vec4 specular = spec * light.color;
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), specular_shinines);
+    vec4 specular = spec * light.color * light.intensity  * specular_intensity;
 
     return (diffuse + specular) * light.intensity * attenuation * intensity;
 }
