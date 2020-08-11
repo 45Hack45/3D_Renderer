@@ -26,6 +26,7 @@ namespace Engine
 		std::vector<std::pair<std::string, std::string>>* getModelPaths();
 
 		void printProjectFiles();
+		void printEngineRCSFiles();
 		void scanFiles();
 	}
 }

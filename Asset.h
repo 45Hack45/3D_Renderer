@@ -7,9 +7,13 @@
 #include <string>
 #include <functional>//required for the hash method
 
+#include "IEditorGUISelectable.h"
+
+#define DisplayedNameMaxSize 64
+
 namespace Engine
 {
-	class Asset
+	class Asset: public IEditorGUISelectable
 	{
 	public:
 
@@ -17,6 +21,8 @@ namespace Engine
 			filePath = file;
 			assetName = name;
 		}
+
+		virtual void drawEditorGUI_Properties();
 
 		std::string assetName;
 		std::string filePath;
@@ -32,9 +38,7 @@ namespace Engine
 			return Hpath ^ (HName << 1);
 		}
 
-	protected:
-
-		std::string fileDirectory() { 
+		std::string fileDirectory() {
 			size_t separatorIndex = filePath.find_last_of('/');
 
 			if (separatorIndex == std::string::npos) {
@@ -43,10 +47,10 @@ namespace Engine
 			}
 
 			return filePath.substr(0, separatorIndex);
-		
+
 		}
 		std::string fileName() {
-			size_t separatorIndex = filePath.find_last_of('/')+1;
+			size_t separatorIndex = filePath.find_last_of('/') + 1;
 			size_t extensionIndex = filePath.find_last_of('.');
 
 			if (separatorIndex == std::string::npos)
@@ -68,14 +72,14 @@ namespace Engine
 			return filePath.substr(separatorIndex, filePath.size());
 		}
 		std::string fileNameAndExtension() {
-			size_t separatorIndex = filePath.find_last_of('/')+1;
+			size_t separatorIndex = filePath.find_last_of('/') + 1;
 
 			if (separatorIndex == std::string::npos) {
 				log_printf(log_level_e::LOG_INFO, "ERROR::ASSET::FILE_DIRECTORY_NOT_FOUND:: %s", filePath);
 				return "";
 			}
 
-			return filePath.substr(separatorIndex, filePath.size()- separatorIndex);
+			return filePath.substr(separatorIndex, filePath.size() - separatorIndex);
 
 		}
 	};

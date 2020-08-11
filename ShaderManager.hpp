@@ -62,9 +62,18 @@ namespace Engine
 			return shaders[shaderName];
 		}
 
-		/*const Shader& operator[](const std::string& shaderName) {
-			return getShader(shaderName);
-		}*/
+		auto Begin() {
+			return shaders.begin();
+		}
+		auto End() {
+			return shaders.end();
+		}
+		auto BeginP() {
+			return shadersPath.begin();
+		}
+		auto EndP() {
+			return shadersPath.end();
+		}
 
 		//Variables-----------------------------------
 

@@ -13,10 +13,12 @@
 
 namespace Engine
 {
-	class MeshRenderer : Component
+	class MeshRenderer : public Component
 	{
 	public:
-
+		MeshRenderer() {
+			name = "MeshRenderer";
+		}
 		void Init(Mesh* mesh, Material* material) {
 			m_mesh = mesh;
 			m_material = material;
@@ -28,6 +30,9 @@ namespace Engine
 		void Render() {
 			m_mesh->Draw();
 		}
+
+
+		void drawEditorGUI_Properties();
 
 		Mesh* m_mesh;
 		Material* m_material;

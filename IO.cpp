@@ -30,7 +30,17 @@ namespace Engine
 			for (auto& p : fs::recursive_directory_iterator(projectPath)) {
 				//std::cout << p.path() << '\n';
 
-				std::string s = p.path().extension().string();
+				std::string s = p.path().string();
+
+				std::cout << s << "		Has extension " << p.path().has_extension() << '\n';
+			}
+		}
+
+		void printEngineRCSFiles() {
+			for (auto& p : fs::recursive_directory_iterator("./rcs")) {
+				//std::cout << p.path() << '\n';
+
+				std::string s = p.path().string();
 
 				std::cout << s << "		Has extension " << p.path().has_extension() << '\n';
 			}
@@ -39,22 +49,68 @@ namespace Engine
 		void scanFiles() {
 
 			filePaths.clear();
+			shaderPaths.clear();
+			texturePaths.clear();
+			modelPaths.clear();
 
+			//Scan Engine resources Path
+			for (auto& p : fs::recursive_directory_iterator("./rcs")) {
+				std::string path = p.path().string();
+				std::string extension = p.path().extension().string();
+				std::string nameExt = p.path().filename().string();//name with extension
+				std::string name = nameExt.substr(0, nameExt.size() - extension.size());//name without extension
+
+				//Convert extension to lowercase
+				char c;
+				int i = 0;
+				std::string lExtension = "";
+				while (extension[i])
+				{
+					lExtension += std::tolower(extension[i]);
+					i++;
+				}
+
+				if (p.path().has_extension())
+				{
+					if (lExtension == ".glsl")
+						shaderPaths.push_back(std::pair<std::string, std::string>(name, path));
+
+					else if (lExtension == ".jpg" || lExtension == ".png")
+						texturePaths.push_back(std::pair<std::string, std::string>(name, path));
+
+					else if (lExtension == ".obj" || lExtension == ".gltf")
+						modelPaths.push_back(std::pair<std::string, std::string>(name, path));
+				}
+
+				filePaths.push_back(path);//Add path
+			}
+
+			//Scan Project Path
 			for (auto& p : fs::recursive_directory_iterator(projectPath)) {
 				std::string path = p.path().string();
 				std::string extension = p.path().extension().string();
 				std::string nameExt = p.path().filename().string();//name with extension
 				std::string name = nameExt.substr(0, nameExt.size() - extension.size());//name without extension
 
+				//Convert extension to lowercase
+				char c;
+				int i = 0;
+				std::string lExtension = "";
+				while (extension[i])
+				{
+					lExtension += std::tolower(extension[i]);
+					i++;
+				}
+
 				if (p.path().has_extension())
 				{
-					if (extension == ".glsl")
+					if (lExtension == ".glsl")
 						shaderPaths.push_back(std::pair<std::string, std::string>(name, path));
 
-					else if (extension == ".jpg" || extension == ".png")
+					else if (lExtension == ".jpg" || lExtension == ".png")
 						texturePaths.push_back(std::pair<std::string, std::string>(name, path));
 
-					else if(extension == ".obj" || extension == ".gltf")
+					else if (lExtension == ".obj" || lExtension == ".gltf")
 						modelPaths.push_back(std::pair<std::string, std::string>(name, path));
 				}
 

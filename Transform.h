@@ -7,9 +7,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Component.h"
+
 namespace Engine
 {
-	class Transform
+	class Transform : public Component
 	{
 	public:
 		//Methods-------------------------------------
@@ -21,9 +23,13 @@ namespace Engine
 			return localSpace() * b.localSpace();
 		}
 
+		void drawEditorGUI_Properties();
+
 		//Variables-----------------------------------
 		float meshScaleFactor = 1.f;
 		Transform* parent;
+
+		char* entityName;
 
 		//Local transform info
 		glm::vec3 m_position;

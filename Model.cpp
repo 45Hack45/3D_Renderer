@@ -134,6 +134,8 @@ namespace Engine
 
             //set Mesh and material index
             m_meshes[j] = Mesh(vertices.data(), vertices.size(), indices.data(), indices.size());
+
+            m_meshes[j].name = mesh->mName.C_Str();
         }
 
         bBox.center = (bBox.min + bBox.max) / 2.f;

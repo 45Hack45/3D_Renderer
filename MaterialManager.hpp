@@ -32,6 +32,13 @@ namespace Engine
 			return materials[materialName];
 		}
 
+		auto Begin() {
+			return materials.begin();
+		}
+		auto End() {
+			return materials.end();
+		}
+
 		//Variables-----------------------------------
 
 	private:

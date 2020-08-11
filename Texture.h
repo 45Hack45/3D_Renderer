@@ -13,7 +13,9 @@
 //#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-class Texture: Engine::Asset
+#include "IEditorGUISelectable.h"
+
+class Texture: public Engine::Asset
 {
 public:
 	Texture(const char* imagePath, GLint imageFormat = GL_RGB,bool flipYImage = true, bool useMipmap = true):Asset(imagePath, imagePath) {

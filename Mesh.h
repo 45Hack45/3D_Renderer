@@ -40,6 +40,8 @@ namespace Engine
 
         void Draw();
 
+        const char* name;
+
         Vertex* m_vertices;
         unsigned int m_numVertices;
 

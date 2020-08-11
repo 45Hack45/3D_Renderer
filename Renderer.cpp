@@ -4,7 +4,7 @@
 namespace Engine
 {
 
-	int m_window_size_X = 800, m_window_size_Y = 600;
+	int m_window_size_X = 800*2, m_window_size_Y = 450*2;
 	bool render2fullWindow = true;
 
 	//Resize viewport
@@ -38,6 +38,8 @@ namespace Engine
 		glfwMakeContextCurrent(m_window);
 
 		glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);//Telling glad to call framebuffer_size_callback on resize window
+
+		glfwSetWindowAspectRatio(m_window, 800, 450);
 
 		log_message(log_level_e::LOG_INFO, "	Renderer Initialized");
 		return 0;
