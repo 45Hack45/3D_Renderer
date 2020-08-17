@@ -53,10 +53,10 @@ namespace Engine
 		//Variables-----------------------------------
 		bool useTransparency = false;
 		Renderer* renderer;
+		Scene* scene;//Current scene
 
 	private:
 		//Variables-----------------------------------
-		Scene* scene;//Current scene
 		Editor* editor;
 
 		//Managers
@@ -67,6 +67,7 @@ namespace Engine
 		MaterialManager* materialManager;
 
 		Model* m_model;
+		Model* m_model2;
 		
 
 		// timing
@@ -86,10 +87,33 @@ namespace Engine
 			log_printf(log_level_e::LOG_INFO,"ERROR::GLFW	%d: %s\n", error, description);
 		}
 
-		void sendLightInfo2Shader(Shader& shader, const std::vector<LightSource_Point>& pointLights, std::vector<LightSource_Spot>& spotLights, const LightSource_Directional& dirLight);
+		void imgui_beginFrame_() {
+			//GUI window
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+		}
+		void imgui_RenderFrame() {
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		}
+
+		void sendLightInfo2Shader(Shader* shader, const std::vector<LightSource_Point>& pointLights, std::vector<LightSource_Spot>& spotLights, const LightSource_Directional& dirLight);
 		void sendProjectionInfo2Shader(Shader* shader, Camera* cam);
+		void sendShadowInfo2Shader(Shader* shader);
 
 		void drawScene(Camera* cam);
+
+		//draws a full screen quad with a texture
+		void drawFullScreenQuad(unsigned int textureID);
+
+		// A typedef to make for easier reading
+		typedef bool (*RenderEntity_Callback)(Entity*, Shader*);
+
+		//Takes a function that it's called for every entity and if the function returns false the entity is not rendered
+		void renderPass(Camera* cam, RenderEntity_Callback func = [](Entity*, Shader*) {return true; });
+
+		void renderPass(Camera* cam, Shader* shader, RenderEntity_Callback func = [](Entity*, Shader*) {return true; });
 	};
 }
 

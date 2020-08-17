@@ -143,6 +143,7 @@
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="include\imgui\examples\imgui_impl_glfw.cpp" />
     <ClCompile Include="include\imgui\examples\imgui_impl_opengl3.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="Editor.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="IEditorGUISelectable.h" />
     <ClInclude Include="include\imgui\examples\imgui_impl_glfw.h" />
     <ClInclude Include="include\imgui\examples\imgui_impl_opengl3.h" />
@@ -207,18 +209,14 @@
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="EngineProject\Shaders\PhongShader.frag" />
-    <None Include="EngineProject\Shaders\PhongShader.glsl" />
-    <None Include="EngineProject\Shaders\PhongShader.vert" />
-    <None Include="EngineProject\Shaders\UnlitShader.frag" />
-    <None Include="EngineProject\Shaders\UnlitShader.glsl" />
-    <None Include="EngineProject\Shaders\UnlitShader.vert" />
-    <None Include="Shaders\PhongShader.frag" />
-    <None Include="Shaders\PhongShader.glsl" />
-    <None Include="Shaders\PhongShader.vert" />
-    <None Include="Shaders\UnlitShader.frag" />
-    <None Include="Shaders\UnlitShader.glsl" />
-    <None Include="Shaders\UnlitShader.vert" />
+    <None Include="rcs\Shaders\FullScreenQuadShader.glsl" />
+    <None Include="rcs\Shaders\PhongShader.frag" />
+    <None Include="rcs\Shaders\PhongShader.glsl" />
+    <None Include="rcs\Shaders\PhongShader.vert" />
+    <None Include="rcs\Shaders\ShadowMapShader.glsl" />
+    <None Include="rcs\Shaders\UnlitShader.frag" />
+    <None Include="rcs\Shaders\UnlitShader.glsl" />
+    <None Include="rcs\Shaders\UnlitShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -58,15 +58,34 @@ public:
 class LightSource_Directional : public LightSource {
 public:
 
-	LightSource_Directional(Color color, float intensity, glm::vec3 direction) : LightSource(color, intensity), m_dir(direction) {};
+	LightSource_Directional(Color color, float intensity, glm::vec3 direction) : LightSource(color, intensity), m_dir(direction) {
+		updateDirection();
+	};
 
-	glm::vec3 getDirection(glm::vec3 p) { return m_dir; }
+	glm::vec3 getDirection()const { 
+		return m_dir;
+	}
 	void setDirection(const glm::vec3& direction) { m_dir = direction; }
+	void setDirection(float Yaw, float Pitch) {
+		this->yaw = Yaw;
+		this->pitch = Pitch;
+		updateDirection();
+	}
+	void updateDirection() {
+		glm::vec3 dir;
+		dir.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+		dir.y = sin(glm::radians(pitch));
+		dir.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		m_dir = glm::normalize(dir);
+	}
 
 	LightSrcType getLightSrcType()const {
 		return LightSrcType::DIRECTIONAL;
 	}
 
+	float yaw = 0,pitch = 0;
+
+private:
 	glm::vec3 m_dir;
 };
 

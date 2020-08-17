@@ -39,7 +39,7 @@ namespace Engine
 			}
 		}
 
-		Model* getModel(const std::string& modelName, bool loadModel = true) {
+		Model* getModel(const std::string& modelName, bool loadModel = true, bool flipUVs = false) {
 			if (models.find(modelName) == models.end())
 			{//Shader not found
 
@@ -52,7 +52,7 @@ namespace Engine
 				}
 				else {
 					//Loading shader
-					models[modelName] = new Model(modelsPath[modelName].c_str(), modelName);
+					models[modelName] = new Model(modelsPath[modelName].c_str(), modelName, flipUVs);
 					if(loadModel)
 						models[modelName]->loadFile();
 				}

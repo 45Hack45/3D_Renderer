@@ -27,16 +27,6 @@
 namespace Engine
 {
 	Engine* engine;
-	void imgui_beginFrame_() {
-		//GUI window
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-	}
-	void imgui_RenderFrame() {
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	}
 
 	void Editor::Init(){
 		engine = Engine::Instance();
@@ -74,6 +64,17 @@ namespace Engine
 				Entity* p = *(Entity**)payload->Data;
 
 				p->setParent(entity);
+			}
+
+			ImGui::EndDragDropTarget();
+		}
+
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(_DragDropModel)) {
+				IM_ASSERT(payload->DataSize == sizeof(Model*));
+				Model* p = *(Model**)payload->Data;
+
+				engine->scene->loadModel2Scene(p);
 			}
 
 			ImGui::EndDragDropTarget();
@@ -377,7 +378,7 @@ namespace Engine
 
 	void Editor::renderGui(float deltaTime, Entity* root, Scene* scene)
 	{
-		imgui_beginFrame_();//-----------------------------Render GUI------------------------------------------
+		//-----------------------------Render GUI------------------------------------------
 
 		//Main Menu
 		if (ImGui::BeginMainMenuBar()) {
@@ -387,6 +388,15 @@ namespace Engine
 
 				ImGui::EndMenu();
 			}
+
+			if (ImGui::BeginMenu("Entity"))
+			{
+				if (ImGui::Button("Create Entity")) {
+					scene->createEntity();
+				}
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMainMenuBar();
 		}
 
@@ -441,8 +451,16 @@ namespace Engine
 			//Directional light
 			if (ImGui::TreeNode("Directional Light")) {
 
+				glm::vec3 dir = scene->m_directionalLight.getDirection();
+
+				ImGui::Text("Direction: (%f,%f,%f)", dir.x, dir.y, dir.z);
+
 				ImGui::ColorEdit3("Color", (float*)&(scene->m_directionalLight.m_color.color_vect));
-				ImGui::SliderAngle("X Rotation", &dirLight_rotation_X);
+				//ImGui::SliderAngle("X Rotation", &dirLight_rotation_X);
+				ImGui::DragFloat("Yaw", (float*)&scene->m_directionalLight.yaw);
+				ImGui::DragFloat("Pitch", (float*)&scene->m_directionalLight.pitch);
+				scene->m_directionalLight.updateDirection();
+
 				ImGui::SliderFloat("Intensity", &scene->m_directionalLight.m_intensity, 0, 5);
 
 				ImGui::TreePop();
@@ -509,8 +527,8 @@ namespace Engine
 						ImGui::Spacing();
 
 						ImGui::Spacing(); ImGui::SliderFloat("Inner Angle", &(scene->m_spotLights[i].m_angle), 0, 45);
-						if (scene->m_spotLights[i].m_outerAngle < scene->m_spotLights[i].m_angle)
-							scene->m_spotLights[i].m_outerAngle = scene->m_spotLights[i].m_angle;
+						//if (scene->m_spotLights[i].m_outerAngle < scene->m_spotLights[i].m_angle)
+						//	scene->m_spotLights[i].m_outerAngle = scene->m_spotLights[i].m_angle;
 
 						ImGui::Spacing(); ImGui::SliderFloat("Outer Angle", &(scene->m_spotLights[i].m_outerAngle), 0, 45);
 
@@ -531,7 +549,7 @@ namespace Engine
 		if (showImGui_Demo)
 			ImGui::ShowDemoWindow(&showImGui_Demo);
 
-		imgui_RenderFrame();//**************************************************************
+		
 	}
 
 	Mesh* Editor::GUI_PropertySelector(const char* propName, Mesh* currentValue)

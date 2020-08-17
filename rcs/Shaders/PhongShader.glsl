@@ -19,10 +19,13 @@ layout (location = 2) in vec2 aTexCoord;
 out vec2 TexCoord;
 out vec3 Normal;
 out vec3 FragPos;
+out vec4 FragPosShadowSpace;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+
+uniform mat4 shadowMatrix;
 
 void main()
 {
@@ -31,10 +34,11 @@ void main()
     TexCoord = aTexCoord;
 
     FragPos = vec3(model * vec4(aPos, 1.0));
+    FragPosShadowSpace = shadowMatrix * vec4(FragPos, 1.0);
 
     //Normal = aNormal;
 
-    Normal = mat3(transpose(inverse(model))) * aNormal;//
+    Normal = mat3(transpose(inverse(model))) * aNormal;
 }
 
 //#End_vert
@@ -69,14 +73,18 @@ out vec4 FragColor;
 in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
+in vec4 FragPosShadowSpace;
 
 uniform vec3 viewPos;
 
 uniform sampler2D texture_diffuse1;
+uniform sampler2D shadowMap;
+uniform sampler2D shadowMap2;
 
 uniform vec4 dye_color = vec4(1.f);
 uniform int use_Transparency = 1;
 
+//--------------------------------------------Lighting
 uniform float ambientLight;
 uniform vec4 ambientColor;
 
@@ -93,11 +101,21 @@ uniform SpotLight spotLights[MAX_LIGHTS];
 uniform int nPointLights;
 uniform int nSpotLights;
 
+uniform float shadowBias = .05f;
+uniform float shadowBiasMax = 0.0000001f;
+
+
 vec4 calculatePointLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,const PointLight light);
 vec4 calculateSpotLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,const SpotLight light);
+float ShadowCalculation(vec4 posShadowSpace, vec3 normal, vec3  lightDir);
 
 void main()
 {
+    float shadow = ShadowCalculation(FragPosShadowSpace, normalize(Normal), normalize(lightsrc_directional_direction));
+
+    /*FragColor = vec4(shadow);
+    return;*/
+
     //Albedo
     vec4 albedo = texture(texture_diffuse1, TexCoord);
 
@@ -107,7 +125,7 @@ void main()
     //Ambient light
     vec4 ambient = ambientLight * ambientColor;
 
-    vec3 lightDir= normalize(lightsrc_directional_direction);//directional light direction
+    vec3 lightDir = normalize(lightsrc_directional_direction);//directional light direction
 
     vec4 lightColor = lightsrc_directional_color;
     float lightIntensity = lightsrc_directional_intensity;
@@ -150,7 +168,7 @@ void main()
         spotLight += calculateSpotLightPhong( viewPos,FragPos, normal, spotLights[i]);
     }
 
-    FragColor = dye_color * albedo * (ambient + diffuse + specular + pointLight + spotLight) ;
+    FragColor = dye_color * albedo * (ambient + ((1-shadow)*(diffuse + specular)) + pointLight + spotLight) ;
     //FragColor = vec4(normal,1.f);
 }
 
@@ -208,6 +226,38 @@ vec4 calculateSpotLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,c
     vec4 specular = spec * light.color * light.intensity  * specular_intensity;
 
     return (diffuse + specular) * light.intensity * attenuation * intensity;
+}
+
+float ShadowCalculation(vec4 posShadowSpace, vec3 normal, vec3  lightDir)
+{
+    // perform perspective divide
+    vec3 projCoords = posShadowSpace.xyz / posShadowSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+
+    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    float currentDepth = projCoords.z; 
+
+    //float shadowBias = 0.0000001;
+
+    float bias = max(shadowBias * (1.0 - dot(normal, lightDir)), shadowBiasMax);  
+
+    float shadow = 0.0;
+
+    //shadow = currentDepth - shadowBias >  closestDepth? 1.0 : 0.0;
+
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for(int x = -1 ; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
+        }    
+    }
+    shadow /= 9.0;
+
+
+    return shadow;
 }
 
 //#End_frag

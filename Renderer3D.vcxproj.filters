@@ -43,9 +43,6 @@
     <Filter Include="EngineProject">
       <UniqueIdentifier>{f990dfc0-72f5-4f41-adeb-fd67a7177b27}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EngineProject\Shaders">
-      <UniqueIdentifier>{81bad72d-7d62-45ba-937a-965a4913a922}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Archivos de encabezado\Interfaces">
       <UniqueIdentifier>{fe7156a0-c753-475a-beb9-f1361c427b58}</UniqueIdentifier>
     </Filter>
@@ -127,6 +124,9 @@
       <Filter>Include\imgui</Filter>
     </ClCompile>
     <ClCompile Include="Asset.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
@@ -251,43 +251,34 @@
     <ClInclude Include="IEditorGUISelectable.h">
       <Filter>Archivos de encabezado\Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\UnlitShader.vert">
+    <None Include="rcs\Shaders\PhongShader.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\UnlitShader.frag">
+    <None Include="rcs\Shaders\PhongShader.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\PhongShader.frag">
+    <None Include="rcs\Shaders\PhongShader.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\PhongShader.vert">
+    <None Include="rcs\Shaders\UnlitShader.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\PhongShader.glsl">
+    <None Include="rcs\Shaders\UnlitShader.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\UnlitShader.glsl">
+    <None Include="rcs\Shaders\UnlitShader.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="EngineProject\Shaders\PhongShader.frag">
-      <Filter>EngineProject\Shaders</Filter>
+    <None Include="rcs\Shaders\FullScreenQuadShader.glsl">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="EngineProject\Shaders\PhongShader.glsl">
-      <Filter>EngineProject\Shaders</Filter>
-    </None>
-    <None Include="EngineProject\Shaders\PhongShader.vert">
-      <Filter>EngineProject\Shaders</Filter>
-    </None>
-    <None Include="EngineProject\Shaders\UnlitShader.frag">
-      <Filter>EngineProject\Shaders</Filter>
-    </None>
-    <None Include="EngineProject\Shaders\UnlitShader.glsl">
-      <Filter>EngineProject\Shaders</Filter>
-    </None>
-    <None Include="EngineProject\Shaders\UnlitShader.vert">
-      <Filter>EngineProject\Shaders</Filter>
+    <None Include="rcs\Shaders\ShadowMapShader.glsl">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -39,7 +39,7 @@ namespace Engine
 				textures[textureName] = new Texture(texturesPath[textureName].c_str());//load texture
 		}
 
-		Texture* getTexture(const std::string& textureName, bool flipY = true) {
+		Texture* getTexture(const std::string& textureName, bool flipY = false) {
 			if (textures.find(textureName) == textures.end())
 			{//Texture not found
 

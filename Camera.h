@@ -41,6 +41,14 @@ public:
 	float MouseSensitivity;
 	float Zoom;
 
+	//	camera projection info
+	bool isOrtographic = false;
+	float ortoFrustrum_Horizontal = 250;
+	float ortoFrustrum_Vertical = 250;
+
+	float near = .1f, far = 1000;
+	float aspectRatio = 800 / 450;
+
 	// constructor with vectors
 	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 	{
@@ -63,7 +71,16 @@ public:
 	// returns the view matrix calculated using Euler Angles and the LookAt Matrix
 	glm::mat4 GetViewMatrix()
 	{
-		return glm::lookAt(Position, Position + Front, Up);
+		glm::vec3 pos = Position;
+
+		return glm::lookAt(pos, Position + Front, Up);
+	}
+
+	glm::mat4 GetProjectionMatrix() {
+		if (isOrtographic)
+			return glm::ortho(-(ortoFrustrum_Horizontal / 2), ortoFrustrum_Horizontal / 2, -(ortoFrustrum_Vertical / 2), ortoFrustrum_Vertical / 2, near, far);
+		else
+			return glm::perspective(glm::radians(Zoom), aspectRatio, near, far);
 	}
 
 	// processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
@@ -122,6 +139,13 @@ public:
 		Yaw = yaw;
 		Pitch = pitch;
 		updateCameraVectors();
+	}
+	void setFront(glm::vec3 frontDirection) {
+		Front = glm::normalize(frontDirection);
+
+		// also re-calculate the Right and Up vector
+		Right = glm::normalize(glm::cross(Front, WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+		Up = glm::normalize(glm::cross(Right, Front));
 	}
 	void setYaw(float yaw) {
 		Yaw = yaw;

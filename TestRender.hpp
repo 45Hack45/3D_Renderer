@@ -162,7 +162,7 @@ void initImgui(GLFWwindow* window, bool darkMode = true) {
 
 void sendLightInfo2Shader(Shader& shader, const std::vector<LightSource_Point>& pointLights, std::vector<LightSource_Spot>& spotLights, const LightSource_Directional& dirLight) {
 
-	shader.use();
+	shader.bind();
 
 	//Setting directional light
 	shader.setFloat("lightsrc_directional_intensity", dirLight.getIntensity());
@@ -272,7 +272,7 @@ int test_render() {
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//Set shader sampler indices
-	shader.use();
+	shader.bind();
 	//shader.setInt("texture1", 0);
 	//shader.setInt("texture2", 1);
 
@@ -329,7 +329,7 @@ int test_render() {
 		float timeValue = glfwGetTime();
 		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;//Changing the value over time
 
-		shader.use();//Bind shader program
+		shader.bind();//Bind shader program
 
 		//Rotate over time
 		const float radius = 5.f;

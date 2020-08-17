@@ -36,7 +36,7 @@ namespace Engine
 
 		//Variables-----------------------------------
 		bool showImGui_Demo = false;
-		float dirLight_rotation_X = 90;
+		//float dirLight_rotation_X = 90;
 
 		IEditorGUISelectable* selected;
 

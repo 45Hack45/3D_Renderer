@@ -33,6 +33,8 @@ namespace Engine
         Model(const std::string& modelPath, const std::string& modelName = "", bool flipUVs = true);
         ~Model();
 
+        void drawEditorGUI_Properties();
+
         void realeseLoadingResources() {
             delete importer;
         }

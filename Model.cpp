@@ -1,6 +1,10 @@
 #include "Model.h"
 #include "glad.h"
 #include "glfw3.h"
+
+#include "Editor.h"
+#include "Engine.h"
+
 namespace Engine
 {
     Model::Model(const std::string& modelPath, const std::string& modelName,bool flipUVs):Asset(modelPath,modelName)
@@ -12,6 +16,14 @@ namespace Engine
 
     Model::~Model()
     {
+    }
+
+    void Model::drawEditorGUI_Properties(){
+        Asset::drawEditorGUI_Properties();
+
+        if (ImGui::Button("Create Entity from model")) {
+            Engine::Instance()->scene->loadModel2Scene(this);
+        }
     }
 
     void Model::loadFile(float scaleFactor) {
