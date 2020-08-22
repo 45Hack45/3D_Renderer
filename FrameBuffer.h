@@ -10,7 +10,7 @@ namespace Engine
 	{
 	public:
 		//Methods-------------------------------------
-		FrameBuffer(int width, int height, int frameTypeFlag = FrameType_Color, int atachment = 0);
+		FrameBuffer(int width, int height, int frameTypeFlag = FrameType_Color, int atachment = 0, GLint colorInternalFormat = GL_RGB);
 
 		~FrameBuffer()
 		{

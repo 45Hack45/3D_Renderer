@@ -19,13 +19,14 @@ layout (location = 2) in vec2 aTexCoord;
 out vec2 TexCoord;
 out vec3 Normal;
 out vec3 FragPos;
-out vec4 FragPosShadowSpace;
+out vec4 FragPosShadowSpace[4];
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-uniform mat4 shadowMatrix;
+uniform mat4 shadowMatrices[4];
+uniform int numCascades;
 
 void main()
 {
@@ -34,7 +35,9 @@ void main()
     TexCoord = aTexCoord;
 
     FragPos = vec3(model * vec4(aPos, 1.0));
-    FragPosShadowSpace = shadowMatrix * vec4(FragPos, 1.0);
+
+    for(int i = 0; i < 4 && i < numCascades; i++)
+        FragPosShadowSpace[i] = shadowMatrices[i] * vec4(FragPos, 1.0);
 
     //Normal = aNormal;
 
@@ -73,13 +76,12 @@ out vec4 FragColor;
 in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
-in vec4 FragPosShadowSpace;
+in vec4 FragPosShadowSpace[4];
 
 uniform vec3 viewPos;
 
 uniform sampler2D texture_diffuse1;
 uniform sampler2D shadowMap;
-uniform sampler2D shadowMap2;
 
 uniform vec4 dye_color = vec4(1.f);
 uniform int use_Transparency = 1;
@@ -103,15 +105,27 @@ uniform int nSpotLights;
 
 uniform float shadowBias = .05f;
 uniform float shadowBiasMax = 0.0000001f;
+uniform int numCascades;
 
 
 vec4 calculatePointLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,const PointLight light);
 vec4 calculateSpotLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,const SpotLight light);
-float ShadowCalculation(vec4 posShadowSpace, vec3 normal, vec3  lightDir);
+float ShadowCalculation(vec4 posShadowSpace, vec3 normal, vec3  lightDir, int cascadeIndex);
 
 void main()
 {
-    float shadow = ShadowCalculation(FragPosShadowSpace, normalize(Normal), normalize(lightsrc_directional_direction));
+    float shadow = -1;
+
+    int cascadeLayer = 0;
+
+    while(shadow == -1 && cascadeLayer < numCascades && cascadeLayer < 4){
+        shadow = ShadowCalculation(FragPosShadowSpace[cascadeLayer], normalize(Normal), normalize(lightsrc_directional_direction), cascadeLayer);
+        cascadeLayer++;
+    }
+
+    if(shadow == -1){//outside all shadowmap cascades
+        shadow = 0;
+    }
 
     /*FragColor = vec4(shadow);
     return;*/
@@ -228,13 +242,31 @@ vec4 calculateSpotLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,c
     return (diffuse + specular) * light.intensity * attenuation * intensity;
 }
 
-float ShadowCalculation(vec4 posShadowSpace, vec3 normal, vec3  lightDir)
+float ShadowCalculation(vec4 posShadowSpace, vec3 normal, vec3  lightDir, int cascadeIndex)
 {
     // perform perspective divide
     vec3 projCoords = posShadowSpace.xyz / posShadowSpace.w;
+    // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
 
-    float closestDepth = texture(shadowMap, projCoords.xy).r; 
+    float xOffset = cascadeIndex*(1.f/numCascades);
+
+    projCoords.x = projCoords.x/numCascades;//normalizing
+    projCoords.x += xOffset;//offsetting
+
+
+    float maxXvalue = (1.f/numCascades ) + xOffset;
+    maxXvalue = (1.f/numCascades) + xOffset;
+
+    //Check if it's out
+    if(projCoords.x < xOffset || projCoords.x > maxXvalue || projCoords.y < 0 || projCoords.y > 1){
+        return -1;
+    }
+
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+
+    // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z; 
 
     //float shadowBias = 0.0000001;
@@ -250,7 +282,8 @@ float ShadowCalculation(vec4 posShadowSpace, vec3 normal, vec3  lightDir)
     {
         for(int y = -1; y <= 1; ++y)
         {
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+
             shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
         }    
     }

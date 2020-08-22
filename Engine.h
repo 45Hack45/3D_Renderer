@@ -100,7 +100,8 @@ namespace Engine
 
 		void sendLightInfo2Shader(Shader* shader, const std::vector<LightSource_Point>& pointLights, std::vector<LightSource_Spot>& spotLights, const LightSource_Directional& dirLight);
 		void sendProjectionInfo2Shader(Shader* shader, Camera* cam);
-		void sendShadowInfo2Shader(Shader* shader);
+		void sendCascadeShadowMapInfo2Shader(Shader* shader, Camera* cascadeCam0, Camera* cascadeCam1, Camera* cascadeCam2, Camera* cascadeCam3);
+		void RenderCascadeShadowmaps(Shader* shader, glm::vec3 lightPos, Camera* cascadeCam0, Camera* cascadeCam1, Camera* cascadeCam2, Camera* cascadeCam3);
 
 		void drawScene(Camera* cam);
 

@@ -46,7 +46,7 @@ public:
 	float ortoFrustrum_Horizontal = 250;
 	float ortoFrustrum_Vertical = 250;
 
-	float near = .1f, far = 1000;
+	float near = 1.f, far = 1000;
 	float aspectRatio = 800 / 450;
 
 	// constructor with vectors

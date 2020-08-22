@@ -28,14 +28,16 @@
 
 #define ambientLight .05f
 
+#define maxCascadeShadowMaps 4
 float shadowMap_Resolution = 1024 * 1;
+int shadowMap_nCascades = 4;
 
 namespace Engine
 {
 	const int _PI = 3.14159265359;
 	FrameBuffer*	shadow_fbo;
 
-	Camera auxCam;
+	Camera cCam0, cCam1, cCam2, cCam3;
 	glm::vec3 auxPosOffset;
 	float shadowBias = 0, shadowBiasMax = 8;
 
@@ -127,7 +129,12 @@ namespace Engine
 		std::cout << "Resolucio Shadowmap: 1024x";
 		std::cin >> shadowMap_Resolution;
 
-		shadow_fbo = new FrameBuffer(shadowMap_Resolution*1024, shadowMap_Resolution*1024, FrameBuffer::FrameType_Depth | FrameBuffer::FrameType_Color, 0);
+		std::cout << "Shadowmap Cascades: ";
+		std::cin >> shadowMap_nCascades;
+
+		shadowMap_nCascades = std::clamp(shadowMap_nCascades, 1, maxCascadeShadowMaps);
+
+		shadow_fbo = new FrameBuffer(shadowMap_Resolution*1024* shadowMap_nCascades, shadowMap_Resolution*1024, FrameBuffer::FrameType_Depth | FrameBuffer::FrameType_Color, 0, GL_RGBA32F);
 
 		log_message(log_level_e::LOG_INFO, "Engine Initialized\n");
 	}
@@ -152,9 +159,22 @@ namespace Engine
 		Camera cam = Camera(glm::vec3(-20, 10, 0));
 		cam.setYaw(0);
 
-		auxCam.ortoFrustrum_Horizontal = 50.f;
-		auxCam.ortoFrustrum_Vertical = 50.f;
-		auxCam.isOrtographic = true;
+		cCam0.ortoFrustrum_Horizontal = 32;
+		cCam0.ortoFrustrum_Vertical = 32;
+		cCam0.isOrtographic = true;
+
+		cCam1.ortoFrustrum_Horizontal = 64;
+		cCam1.ortoFrustrum_Vertical = 64;
+		cCam1.isOrtographic = true;
+
+		cCam2.ortoFrustrum_Horizontal = 250;
+		cCam2.ortoFrustrum_Vertical = 250;
+		cCam2.isOrtographic = true;
+
+		cCam3.ortoFrustrum_Horizontal = 500;
+		cCam3.ortoFrustrum_Vertical = 500;
+		cCam3.isOrtographic = true;
+
 		
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::scale(glm::rotate(model, glm::radians(-45.0f * 0), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(1.f, 1.f, 1.f)*1.f);
@@ -165,7 +185,7 @@ namespace Engine
 
 		m2Entity->transform.m_position = glm::vec3(0, 10, 0);
 
-		scene->m_directionalLight.setDirection(0.f, 100.f);
+		scene->m_directionalLight.setDirection(0.f, 118.f);
 		scene->m_directionalLight.m_intensity = 1.f;
 
 		LightSource_Point pointLight1(Color::White, 1, glm::vec3(54, 2.5f, 5.5));
@@ -325,12 +345,46 @@ namespace Engine
 		shader->setInt("nSpotLights", spotLights.size());
 	}
 
-	void Engine::sendShadowInfo2Shader(Shader* shader) {
+	void Engine::RenderCascadeShadowmaps(Shader* shader, glm::vec3 lightPos, Camera* cascadeCam0, Camera* cascadeCam1, Camera* cascadeCam2, Camera* cascadeCam3) {
+		glClearColor(1, 1, 1, 1);
+		glClearDepth(1.f);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+		float res = 1024 * shadowMap_Resolution;
+
+		shader->setVector("lightPos", lightPos);
+
+		shader->setFloat("far_plane", cascadeCam0->far);
+		glViewport(0, 0, res, res);
+		renderPass(cascadeCam0, shader);
+
+
+		//glClear(GL_DEPTH_BUFFER_BIT);
+
+		shader->setFloat("far_plane", cascadeCam1->far);
+		glViewport(res, 0, res, res);
+		renderPass(cascadeCam1, shader);
+
+		shader->setFloat("far_plane", cascadeCam2->far);
+		glViewport(res * 2, 0, res, res);
+		renderPass(cascadeCam2, shader);
+
+		shader->setFloat("far_plane", cascadeCam3->far);
+		glViewport(res * 3, 0, res, res);
+		renderPass(cascadeCam3, shader);
+	}
+
+	void Engine::sendCascadeShadowMapInfo2Shader(Shader* shader, Camera* cascadeCam0, Camera* cascadeCam1, Camera* cascadeCam2, Camera* cascadeCam3) {
 		shader->setInt("shadowMap", 15);//set shadowMap sampler to active texture 15
 		shadow_fbo->bindDepthTexture(15);//bind depth texture to active texture 15
 
-		glm::mat4 shadowMatrix = auxCam.GetProjectionMatrix() * auxCam.GetViewMatrix();
-		shader->setMat4("shadowMatrix", shadowMatrix);
+		shader->setMat4("shadowMatrices[0]", cascadeCam0->GetProjectionMatrix() * cascadeCam0->GetViewMatrix());
+		shader->setMat4("shadowMatrices[1]", cascadeCam1->GetProjectionMatrix() * cascadeCam1->GetViewMatrix());
+		shader->setMat4("shadowMatrices[2]", cascadeCam2->GetProjectionMatrix() * cascadeCam2->GetViewMatrix());
+		shader->setMat4("shadowMatrices[3]", cascadeCam3->GetProjectionMatrix() * cascadeCam3->GetViewMatrix());
+
+		shader->setInt("numCascades", shadowMap_nCascades);
+
 		shader->setFloat("shadowBias", shadowBias * .00001f);
 		shader->setFloat("shadowBiasMax", shadowBiasMax * .00001f);
 	}
@@ -357,22 +411,28 @@ namespace Engine
 	{
 		
 		static float auxCamDistance = 500.f;
+		static float camDirOffsetFactor = 16.f;
 
 		if (ImGui::Begin("Shadowmap")) {
 			ImGui::DragFloat3("AuxCam Offset", (float*)&auxPosOffset);
 
-			ImGui::DragFloat("Horizontal", &auxCam.ortoFrustrum_Horizontal);
-			ImGui::DragFloat("Vertical", &auxCam.ortoFrustrum_Vertical);
+			ImGui::DragFloat("Horizontal", &cCam0.ortoFrustrum_Horizontal);
+			ImGui::DragFloat("Vertical", &cCam0.ortoFrustrum_Vertical);
 
-			ImGui::DragFloat("Near", &auxCam.near);
-			ImGui::DragFloat("Far", &auxCam.far);
+			ImGui::DragFloat("Near", &cCam0.near);
+			ImGui::DragFloat("Far", &cCam0.far);
 
 			ImGui::Spacing();
 			ImGui::Spacing();
 
 			ImGui::DragFloat("ShadowBiasFactor", &shadowBias);
 			ImGui::DragFloat("ShadowBiasMax", &shadowBiasMax);
+
+			ImGui::Spacing();
+			ImGui::Spacing();
+
 			ImGui::DragFloat("AuxCam Distance", &auxCamDistance);
+			ImGui::DragFloat("camDirOffsetFactor", &camDirOffsetFactor);
 		}
 		ImGui::End();
 
@@ -382,24 +442,33 @@ namespace Engine
 		dirlight->updateDirection();
 		glm::vec3 dir = -glm::normalize(dirlight->getDirection());
 
-		auxCam.Position = cam->Position;
-		auxCam.Position.y = 0;
-		auxCam.Position += auxPosOffset  - dir * auxCamDistance;
+		glm::vec3 pos;
 
-		auxCam.setFront(dir);
+		pos = cam->Position + cam->Front * camDirOffsetFactor;
+		pos.y = 0;
+		pos += auxPosOffset  - dir * auxCamDistance;
+
+		cCam0.Position = pos;
+		cCam1.Position = pos;
+		cCam2.Position = pos;
+		cCam3.Position = pos;
+
+		cCam0.setFront(dir);
+		cCam1.setFront(dir);
+		cCam2.setFront(dir);
+		cCam3.setFront(dir);
 
 
-		float tH = auxCam.ortoFrustrum_Horizontal;
-		float tV = auxCam.ortoFrustrum_Vertical;
-		float tNear = auxCam.near;
-		float tFar = auxCam.far;
+		Shader* shadowmapShader = shaderManager->getShader("ShadowMapShader");
+		shadowmapShader->bind();
+
 		//Shadowmap pass
 		shadow_fbo->bind(true);
 
 		glClearColor(1, 1, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		renderPass(&auxCam, shaderManager->getShader("ShadowMapShader"));
+		RenderCascadeShadowmaps(shadowmapShader, pos, &cCam0, &cCam1, &cCam2, &cCam3);
 
 		shadow_fbo->unbind();
 
@@ -408,19 +477,16 @@ namespace Engine
 
 		static bool showShadowCam = false;
 
-		if (input->isKeyPressed(Input::KeyboardCode::KEY_CODE_Q))
-			showShadowCam = true;
-		if (input->isKeyPressed(Input::KeyboardCode::KEY_CODE_E))
-			showShadowCam = false;
+		if (input->isKeyPressed(Input::KeyboardCode::KEY_CODE_Q))showShadowCam = true;
+		if (input->isKeyPressed(Input::KeyboardCode::KEY_CODE_E))showShadowCam = false;
 
-		if(showShadowCam)
-			drawFullScreenQuad(shadow_fbo->colorTextureID());
+		if(showShadowCam)drawFullScreenQuad(shadow_fbo->colorTextureID());
 
 		Shader* phongShader = shaderManager->getShader("PhongShader");
 		phongShader->bind();
 
 
-		sendShadowInfo2Shader(phongShader);
+		sendCascadeShadowMapInfo2Shader(phongShader, &cCam0, &cCam1, &cCam2, &cCam3);
 
 		sendLightInfo2Shader(phongShader, scene->m_pointLights, scene->m_spotLights, scene->m_directionalLight);
 

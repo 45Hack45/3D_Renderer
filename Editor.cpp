@@ -10,6 +10,8 @@
 #include "TextureManager.hpp"
 #include "MaterialManager.hpp"
 
+#define fps_evaluated_frames 60 // use last 60 frames to calculate avarage framerate
+
 #define _nameMaxSize 64
 
 #define _MaterialIcon "Engine_AssetGUI_Material_Icon_small"
@@ -400,9 +402,24 @@ namespace Engine
 			ImGui::EndMainMenuBar();
 		}
 
+		static float deltatimes[fps_evaluated_frames];
+
+		float deltatime = deltaTime;
+
+		for (int i = 0; i < fps_evaluated_frames; i++) {
+			deltatime += deltatimes[i];
+		}
+
+		deltatime /= fps_evaluated_frames;
+
+		for (int i = fps_evaluated_frames-1; i >= 1; i--) {
+			deltatimes[i] = deltatimes[i - 1];
+		}
+
+		deltatimes[0] = deltaTime;
 
 		ImGui::Begin("Frame Rate", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar);
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", deltaTime * 1000, 1 / (deltaTime));
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", deltatime * 1000.f, 1.f / (deltatime));
 		ImGui::End();
 
 		ImGuiWindowFlags windowsFlags = ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
