@@ -1,3 +1,5 @@
+//#Begin_prop
+//#End_prop
 
 //#Begin_vert
 
@@ -40,7 +42,7 @@ void main()
     lightDistance = lightDistance / far_plane;
 
     FragColor = vec4(1) * lightDistance;
-    FragColor.a = 1f;
+    FragColor.a = 1.f;
 }
 
 //#End_frag

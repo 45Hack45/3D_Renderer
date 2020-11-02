@@ -4,7 +4,10 @@
 (color      dye_color           myColor)
 (float      specular_shinines   shinines)
 (float      specular_intensity  specularIntensity)
+(bool       useNormalMaping     useNormalMap)
 (sampler2D  texture_diffuse1    albedoTexture)
+(sampler2D  texture_specular1   specularTexture)
+(sampler2D  texture_normalMap   normalMapTexture)
 //#End_prop
 
 
@@ -15,17 +18,20 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoord;
+layout (location = 3) in vec3 aTangent;
+layout (location = 4) in vec3 aBitangent;  
 
 out vec2 TexCoord;
 out vec3 Normal;
 out vec3 FragPos;
 out vec4 FragPosShadowSpace[4];
+out mat3 TBN;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-uniform mat4 shadowMatrices[4];
+uniform mat4 shadowMatrices[4];//shadow ViewProjection Matrices
 uniform int numCascades;
 
 void main()
@@ -42,6 +48,11 @@ void main()
     //Normal = aNormal;
 
     Normal = mat3(transpose(inverse(model))) * aNormal;
+
+    vec3 T = normalize(vec3(model * vec4(aTangent,   0.0)));
+    vec3 B = normalize(vec3(model * vec4(aBitangent, 0.0)));
+    vec3 N = normalize(vec3(model * vec4(aNormal,    0.0)));
+    TBN = mat3(T, B, N);
 }
 
 //#End_vert
@@ -77,10 +88,15 @@ in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
 in vec4 FragPosShadowSpace[4];
+in mat3 TBN;
+
+uniform bool useNormalMaping = true;
 
 uniform vec3 viewPos;
 
 uniform sampler2D texture_diffuse1;
+uniform sampler2D texture_specular1;
+uniform sampler2D texture_normalMap;
 uniform sampler2D shadowMap;
 
 uniform vec4 dye_color = vec4(1.f);
@@ -118,8 +134,19 @@ void main()
 
     int cascadeLayer = 0;
 
+    vec3 normal = vec3(0.f);
+
+    if(useNormalMaping){
+        normal = texture(texture_normalMap, TexCoord).rgb;
+        normal = normal * 2.0 - 1.0;   
+        normal = normalize(TBN * normal);
+        
+    }else{
+        normal = normalize(Normal); 
+    }
+
     while(shadow == -1 && cascadeLayer < numCascades && cascadeLayer < 4){
-        shadow = ShadowCalculation(FragPosShadowSpace[cascadeLayer], normalize(Normal), normalize(lightsrc_directional_direction), cascadeLayer);
+        shadow = ShadowCalculation(FragPosShadowSpace[cascadeLayer], normal, normalize(lightsrc_directional_direction), cascadeLayer);
         cascadeLayer++;
     }
 
@@ -133,6 +160,10 @@ void main()
     //Albedo
     vec4 albedo = texture(texture_diffuse1, TexCoord);
 
+    //Specular map
+    vec4 specularTex = texture(texture_specular1,TexCoord);
+    float specularMap = (specularTex.r+specularTex.g+specularTex.b)/3;
+
     if(albedo.a == 0.0f)
         discard;
 
@@ -143,7 +174,6 @@ void main()
 
     vec4 lightColor = lightsrc_directional_color;
     float lightIntensity = lightsrc_directional_intensity;
-    vec3 normal = normalize(Normal);
 
 
     //Directional Light Diffuse
@@ -166,7 +196,7 @@ void main()
     vec3 halfwayDir = normalize(lightDir + viewDir);
 
     float spec = pow(max(dot(normal, halfwayDir), 0.0), specular_shinines);
-    vec4 specular = spec * lightColor * lightIntensity * specular_intensity;
+    vec4 specular = spec * lightColor * lightIntensity * specular_intensity * specularMap;
 
 
 
@@ -193,7 +223,8 @@ vec4 calculatePointLightPhong(vec3 cam_position,vec3 frag_position, vec3 normal,
     float dst = length(lightDir);
     lightDir = normalize(lightDir);
 
-    float attenuation =  1.f / (1.f + light.linear * dst + light.quadratic * (dst * dst));
+    //float attenuation =  1.f / (1.f + light.linear * dst + light.quadratic * (dst * dst));
+    float attenuation =  1.f / (1.f + light.linear + light.quadratic * (dst));
 
     //Diffuse
     float NDotL = max(dot(normal, lightDir), 0.0);

@@ -189,7 +189,7 @@ namespace Engine
 		//					varName		tex2D index
 		std::unordered_map<std::string, int>								tex2DProperties;
 		//						sVarName	texture
-		std::vector<std::pair<std::string, Texture*>>						tex2D;
+		std::vector<std::pair<std::string, Texture_Asset*>>						tex2D;
 
 		//Methods-------------------------------------
 

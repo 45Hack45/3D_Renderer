@@ -113,11 +113,11 @@ namespace Engine
 
 	void Editor::renderAssetsGui() {
 
-		Texture* materialIcon = TextureManager::Instance()->getTexture(_MaterialIcon, false);
-		Texture* TextureIcon = TextureManager::Instance()->getTexture(_TextureIcon, false);
-		Texture* ModelIcon = TextureManager::Instance()->getTexture(_ModelIcon, false);
-		Texture* MeshIcon = TextureManager::Instance()->getTexture(_MeshIcon, false);
-		Texture* ShaderIcon = TextureManager::Instance()->getTexture(_ShaderIcon, false);
+		Texture_Asset* materialIcon = TextureManager::Instance()->getTexture(_MaterialIcon, false);
+		Texture_Asset* TextureIcon = TextureManager::Instance()->getTexture(_TextureIcon, false);
+		Texture_Asset* ModelIcon = TextureManager::Instance()->getTexture(_ModelIcon, false);
+		Texture_Asset* MeshIcon = TextureManager::Instance()->getTexture(_MeshIcon, false);
+		Texture_Asset* ShaderIcon = TextureManager::Instance()->getTexture(_ShaderIcon, false);
 
 		if (ImGui::BeginTabBar("ResourcesTabBar")) {
 
@@ -129,7 +129,7 @@ namespace Engine
 				while (mIterator != mIteratorEnd)
 				{
 
-					Texture* value = TextureManager::Instance()->getTexture((*mIterator).first);//this will force to always load all textures
+					Texture_Asset* value = TextureManager::Instance()->getTexture((*mIterator).first);//this will force to always load all textures
 
 					if (!value) {
 						mIterator++;
@@ -150,7 +150,7 @@ namespace Engine
 
 					if (ImGui::BeginDragDropSource()) {
 
-						ImGui::SetDragDropPayload(_DragDropTexture, &value, sizeof(Texture**));
+						ImGui::SetDragDropPayload(_DragDropTexture, &value, sizeof(Texture_Asset**));
 						ImGui::Text(value->assetName.c_str());
 						ImGui::EndDragDropSource();
 					}
@@ -737,9 +737,9 @@ namespace Engine
 		return selectedValue;
 	}
 
-	Texture* Editor::GUI_PropertySelector(const char* propName, Texture* currentValue)
+	Texture_Asset* Editor::GUI_PropertySelector(const char* propName, Texture_Asset* currentValue)
 	{
-		Texture* selectedValue = currentValue;
+		Texture_Asset* selectedValue = currentValue;
 
 		std::string name = "NONE";
 
@@ -750,9 +750,9 @@ namespace Engine
 
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(_DragDropTexture)) {
-				if (payload->DataSize != sizeof(Texture**))
+				if (payload->DataSize != sizeof(Texture_Asset**))
 					log_error("ERROR::EDITOR::GUI_PROPERTY_SELECTOR::FAILED_DROP_OPERATION");
-				Texture* p = *(Texture**)payload->Data;
+				Texture_Asset* p = *(Texture_Asset**)payload->Data;
 
 				//Pre exiting
 
@@ -775,7 +775,7 @@ namespace Engine
 			while (mIterator != mIteratorEnd)
 			{
 
-				Texture* value = (*mIterator).second;
+				Texture_Asset* value = (*mIterator).second;
 				bool selected = value == currentValue;
 
 				if (ImGui::Selectable(value->assetName.c_str(), selected))

@@ -217,6 +217,7 @@
     <None Include="rcs\Shaders\UnlitShader.frag" />
     <None Include="rcs\Shaders\UnlitShader.glsl" />
     <None Include="rcs\Shaders\UnlitShader.vert" />
+    <None Include="rcs\Shaders\VolumetricLightShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

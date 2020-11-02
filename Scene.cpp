@@ -21,6 +21,15 @@ namespace Engine
 	}
 
 	void Scene::loadModelMaterials(Model* model) {
+
+		if (!model) {
+			log_error("ERROR::SCENE::LOAD_MODEL_MATERIALS: model is null");
+			return;
+		}else if (!model->m_scene) {
+			log_error(("ERROR::SCENE::LOAD_MODEL_MATERIALS: model " + model->assetName + " not loaded.").c_str());
+			return;
+		}
+
 		for (size_t i = 0; i < model->m_scene->mNumMaterials; i++)
 		{
 			bool usePhong = false;
@@ -84,8 +93,55 @@ namespace Engine
 				}
 				else
 				{
-					log_printf_info("WARNING::ENGINE::LOAD_MODEL_MATERIAL: failed to get material texture.	 Model: %s\n", model->assetName.c_str());
+					log_printf_info("WARNING::ENGINE::LOAD_MODEL_MATERIAL: failed to get material diffuse texture.	 Model: %s\n", model->assetName.c_str());
 				}
+
+
+			if (aMat->GetTextureCount(aiTextureType::aiTextureType_SPECULAR) > 0)
+				if (aMat->GetTexture(aiTextureType::aiTextureType_SPECULAR, 0, &path) == aiReturn::aiReturn_SUCCESS) {
+					std::string textureName = path.C_Str();
+
+					textureName = textureName.substr(0, textureName.find_last_of('.'));//Remove extension
+
+					//log_printf_info("Material[%i] albedoPath: %s", i, textureName.c_str());
+					mat->setTexture2D("specularTexture", textureName);
+				}
+				else
+				{
+					log_printf_info("WARNING::ENGINE::LOAD_MODEL_MATERIAL: failed to get material specular texture.	 Model: %s\n", model->assetName.c_str());
+				}
+
+			mat->setBool("useNormalMap", false);
+
+			if (aMat->GetTextureCount(aiTextureType::aiTextureType_NORMALS) > 0) {
+				if (aMat->GetTexture(aiTextureType::aiTextureType_NORMALS, 0, &path) == aiReturn::aiReturn_SUCCESS) {
+					std::string textureName = path.C_Str();
+
+					textureName = textureName.substr(0, textureName.find_last_of('.'));//Remove extension
+
+					//log_printf_info("Material[%i] albedoPath: %s", i, textureName.c_str());
+					mat->setTexture2D("normalMapTexture", textureName);
+					mat->setBool("useNormalMap", true);
+				}
+				else
+				{
+					log_printf_info("WARNING::ENGINE::LOAD_MODEL_MATERIAL: failed to get material normal map texture.	 Model: %s\n", model->assetName.c_str());
+				}
+			}else if (aMat->GetTextureCount(aiTextureType::aiTextureType_HEIGHT) > 0) {
+				if (aMat->GetTexture(aiTextureType::aiTextureType_HEIGHT, 0, &path) == aiReturn::aiReturn_SUCCESS) {
+					std::string textureName = path.C_Str();
+
+					textureName = textureName.substr(0, textureName.find_last_of('.'));//Remove extension
+
+					//log_printf_info("Material[%i] albedoPath: %s", i, textureName.c_str());
+					mat->setTexture2D("normalMapTexture", textureName);
+					mat->setBool("useNormalMap", true);
+				}
+				else
+				{
+					log_printf_info("WARNING::ENGINE::LOAD_MODEL_MATERIAL: failed to get material normal map texture.	 Model: %s\n", model->assetName.c_str());
+				}
+			}
 
 			int blend;
 			if (aMat->Get(AI_MATKEY_BLEND_FUNC, blend) == aiReturn::aiReturn_SUCCESS)
@@ -191,6 +247,15 @@ namespace Engine
 
 	Entity* Scene::loadModel2Scene(Model* model)
 	{
+		if (!model) {
+			log_error("ERROR::SCENE::LOAD_MODEL_MATERIALS: model is null");
+			return nullptr;
+		}
+		else if (!model->m_scene) {
+			log_error(("ERROR::SCENE::LOAD_MODEL_MATERIALS: model " + model->assetName + " not loaded.").c_str());
+			return nullptr;
+		}
+
 		loadModelMaterials(model);
 
 		aiNode* nRoot = model->m_scene->mRootNode;

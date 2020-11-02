@@ -280,5 +280,8 @@
     <None Include="rcs\Shaders\ShadowMapShader.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="rcs\Shaders\VolumetricLightShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

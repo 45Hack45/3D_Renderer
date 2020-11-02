@@ -73,7 +73,7 @@ namespace Engine
 		else if (varType == "sampler2D") {//text2D
 			//							index		before incrementing size
 			tex2DProperties[variableName] = tex2D.size();
-			tex2D.push_back(pair<string, Texture*>(sVarName, m_textureManager->getTexture("Engine_AssetGUI_Grey_Texture")));
+			tex2D.push_back(pair<string, Texture_Asset*>(sVarName, m_textureManager->getTexture("Engine_AssetGUI_Grey_Texture")));
 		}
 
 		else {
@@ -123,11 +123,12 @@ namespace Engine
 		//-------------------------------------------------Tex2D
 		for (size_t i = 0; i < tex2D.size(); i++){
 			//												texture name
-			Texture* texture = tex2D[i].second;
+			Texture_Asset* texture = tex2D[i].second;
 			if (texture) {
 				if (texture->nChanels() == 4)
 					isTransparent = true;
 				texture->bind(i);
+				m_shader->setInt(tex2D[i].first, i);
 			}
 		}
 	}

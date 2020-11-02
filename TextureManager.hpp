@@ -36,10 +36,10 @@ namespace Engine
 		void AddTexture(const std::string& textureName, const std::string& texturePath, bool loadTexture = false) {
 			texturesPath[textureName] = texturePath;
 			if (loadTexture) 
-				textures[textureName] = new Texture(texturesPath[textureName].c_str());//load texture
+				textures[textureName] = new Texture_Asset(texturesPath[textureName].c_str());//load texture
 		}
 
-		Texture* getTexture(const std::string& textureName, bool flipY = false) {
+		Texture_Asset* getTexture(const std::string& textureName, bool flipY = false) {
 			if (textures.find(textureName) == textures.end())
 			{//Texture not found
 
@@ -52,7 +52,7 @@ namespace Engine
 				}
 				else {
 					//Loading texture
-					textures[textureName] = new Texture(texturesPath[textureName].c_str(), GL_RGB, flipY);
+					textures[textureName] = new Texture_Asset(texturesPath[textureName].c_str(), GL_RGB, flipY);
 					textures[textureName]->assetName = textureName;
 				}
 			}
@@ -87,7 +87,7 @@ namespace Engine
 
 		//Variables-----------------------------------
 		std::unordered_map<std::string, std::string> texturesPath;
-		std::unordered_map<std::string, Texture*> textures;
+		std::unordered_map<std::string, Texture_Asset*> textures;
 	};
 }
 

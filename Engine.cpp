@@ -29,7 +29,7 @@
 #define ambientLight .05f
 
 #define maxCascadeShadowMaps 4
-float shadowMap_Resolution = 1024 * 1;
+float shadowMap_Resolution = 1;
 int shadowMap_nCascades = 4;
 
 namespace Engine
@@ -37,10 +37,13 @@ namespace Engine
 	const int _PI = 3.14159265359;
 	FrameBuffer*	shadow_fbo;
 
+	FrameBuffer* screenRendered_fbo;
+
 	Camera cCam0, cCam1, cCam2, cCam3;
 	glm::vec3 auxPosOffset;
-	float shadowBias = 0, shadowBiasMax = 8;
+	float shadowBias = 16, shadowBiasMax = 8;
 
+	
 	void initImgui(GLFWwindow* window, bool darkMode = true) {
 
 		// Setup Dear ImGui context
@@ -80,6 +83,7 @@ namespace Engine
 	}
 
 	int Engine::Init(const char* projectPath, const char* projectName) {
+
 		log_message(log_level_e::LOG_INFO, "Initializing Engine");
 		IO::setProjectPath(projectPath);
 
@@ -126,15 +130,17 @@ namespace Engine
 
 		scene = new Scene();//Init scene
 
-		std::cout << "Resolucio Shadowmap: 1024x";
+		/*std::cout << "Resolucio Shadowmap: 1024x";
 		std::cin >> shadowMap_Resolution;
 
 		std::cout << "Shadowmap Cascades: ";
-		std::cin >> shadowMap_nCascades;
+		std::cin >> shadowMap_nCascades;*/
 
 		shadowMap_nCascades = std::clamp(shadowMap_nCascades, 1, maxCascadeShadowMaps);
 
-		shadow_fbo = new FrameBuffer(shadowMap_Resolution*1024* shadowMap_nCascades, shadowMap_Resolution*1024, FrameBuffer::FrameType_Depth | FrameBuffer::FrameType_Color, 0, GL_RGBA32F);
+		shadow_fbo = new FrameBuffer(shadowMap_Resolution * 1024 * shadowMap_nCascades, shadowMap_Resolution * 1024, FrameBuffer::FrameType_Depth | FrameBuffer::FrameType_Color, 0, GL_RGBA16F);
+
+		screenRendered_fbo = new FrameBuffer(800 * 2, 450 * 2, FrameBuffer::FrameType_Depth | FrameBuffer::FrameType_Color, 0, GL_RGB);
 
 		log_message(log_level_e::LOG_INFO, "Engine Initialized\n");
 	}
@@ -181,12 +187,12 @@ namespace Engine
 
 		scene->loadModel2Scene(m_model);
 		Entity* m2Entity = scene->loadModel2Scene(m_model2);
-
-
-		m2Entity->transform.m_position = glm::vec3(0, 10, 0);
+		
+		if(m2Entity) m2Entity->transform.m_position = glm::vec3(0, 10, 0);
 
 		scene->m_directionalLight.setDirection(0.f, 118.f);
 		scene->m_directionalLight.m_intensity = 1.f;
+		scene->m_directionalLight.setColor(Color(1, 242.f/255.f, 184.f/255.f));
 
 		LightSource_Point pointLight1(Color::White, 1, glm::vec3(54, 2.5f, 5.5));
 
@@ -378,10 +384,10 @@ namespace Engine
 		shader->setInt("shadowMap", 15);//set shadowMap sampler to active texture 15
 		shadow_fbo->bindDepthTexture(15);//bind depth texture to active texture 15
 
-		shader->setMat4("shadowMatrices[0]", cascadeCam0->GetProjectionMatrix() * cascadeCam0->GetViewMatrix());
-		shader->setMat4("shadowMatrices[1]", cascadeCam1->GetProjectionMatrix() * cascadeCam1->GetViewMatrix());
-		shader->setMat4("shadowMatrices[2]", cascadeCam2->GetProjectionMatrix() * cascadeCam2->GetViewMatrix());
-		shader->setMat4("shadowMatrices[3]", cascadeCam3->GetProjectionMatrix() * cascadeCam3->GetViewMatrix());
+		shader->setMat4("shadowMatrices[0]", cascadeCam0->GetViewProjectionMatrix());
+		shader->setMat4("shadowMatrices[1]", cascadeCam1->GetViewProjectionMatrix());
+		shader->setMat4("shadowMatrices[2]", cascadeCam2->GetViewProjectionMatrix());
+		shader->setMat4("shadowMatrices[3]", cascadeCam3->GetViewProjectionMatrix());
 
 		shader->setInt("numCascades", shadowMap_nCascades);
 
@@ -413,6 +419,20 @@ namespace Engine
 		static float auxCamDistance = 500.f;
 		static float camDirOffsetFactor = 16.f;
 
+		static bool  volumetricLight_useColor = false;
+		static Color volumetricLight_color = Color::White;
+		static int	 volumetricLight_steps = 50;
+		static float volumetricLight_density = 1.f;
+		static float volumetricLight_intensity = 1;
+		static float volumetricLight_attenuation_linear = 0;
+		static float volumetricLight_attenuation_quadratic = .016f;
+
+
+		if (ImGui::Begin("Debug")) {
+			ImGui::Checkbox("GammaCorrection", &gammaCorrection);
+		}
+		ImGui::End();
+
 		if (ImGui::Begin("Shadowmap")) {
 			ImGui::DragFloat3("AuxCam Offset", (float*)&auxPosOffset);
 
@@ -433,6 +453,23 @@ namespace Engine
 
 			ImGui::DragFloat("AuxCam Distance", &auxCamDistance);
 			ImGui::DragFloat("camDirOffsetFactor", &camDirOffsetFactor);
+		}
+		ImGui::End();
+
+		if (ImGui::Begin("Volumetric Light")) {
+			ImGui::Checkbox("Custom Color", &volumetricLight_useColor);
+			ImGui::ColorEdit3("Color", (float*)&volumetricLight_color.color_vect);
+
+			ImGui::Spacing();
+
+			ImGui::DragInt("Marching Steps", &volumetricLight_steps);
+
+			ImGui::Spacing();
+			ImGui::Spacing();
+			ImGui::SliderFloat("Density", &volumetricLight_density, 0, 2);
+			ImGui::SliderFloat("Intensity", &volumetricLight_intensity, 0, 1);
+			ImGui::SliderFloat("Attenuation Linear", &volumetricLight_attenuation_linear, .00001,1);
+			ImGui::SliderFloat("Attenuation Quadratic", &volumetricLight_attenuation_quadratic, .00001, 1);
 		}
 		ImGui::End();
 
@@ -462,7 +499,7 @@ namespace Engine
 		Shader* shadowmapShader = shaderManager->getShader("ShadowMapShader");
 		shadowmapShader->bind();
 
-		//Shadowmap pass
+		//Shadowmap pass------------------------------------------------------------------------------------
 		shadow_fbo->bind(true);
 
 		glClearColor(1, 1, 1, 1);
@@ -470,7 +507,7 @@ namespace Engine
 
 		RenderCascadeShadowmaps(shadowmapShader, pos, &cCam0, &cCam1, &cCam2, &cCam3);
 
-		shadow_fbo->unbind();
+		FrameBuffer::unbind();//-------------------------------------------------------------------------------
 
 		glViewport(0, 0, renderer->getWindowSizeX(), renderer->getWindowSizeY());
 
@@ -480,8 +517,6 @@ namespace Engine
 		if (input->isKeyPressed(Input::KeyboardCode::KEY_CODE_Q))showShadowCam = true;
 		if (input->isKeyPressed(Input::KeyboardCode::KEY_CODE_E))showShadowCam = false;
 
-		if(showShadowCam)drawFullScreenQuad(shadow_fbo->colorTextureID());
-
 		Shader* phongShader = shaderManager->getShader("PhongShader");
 		phongShader->bind();
 
@@ -490,10 +525,18 @@ namespace Engine
 
 		sendLightInfo2Shader(phongShader, scene->m_pointLights, scene->m_spotLights, scene->m_directionalLight);
 
+
+		screenRendered_fbo->bind(true);//world render pass---------------------------------------------------------
+
+		glClearColor(1, 1, 1, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		
 		//opaque pass
 		renderPass(cam, [](Entity* entity, Shader* shader) {
 			return !entity->meshRenderer.m_material->isTransparent; 
 		});
+		
 
 
 		//transparent pass
@@ -503,18 +546,69 @@ namespace Engine
 			return entity->meshRenderer.m_material->isTransparent;
 		});
 		//glDisable(GL_BLEND);
+
+		FrameBuffer::unbind();//--------------------------------------------------------------------------------------
+
+		glViewport(0, 0, renderer->getWindowSizeX(), renderer->getWindowSizeY());
+
+		glDisable(GL_DEPTH_TEST);
+
+		if (gammaCorrection)
+			glEnable(GL_FRAMEBUFFER_SRGB);
+
+		drawFullScreenQuad(screenRendered_fbo->colorTextureID());//draw screen
+
+		if (gammaCorrection)
+			glDisable(GL_FRAMEBUFFER_SRGB);
+
+		Shader* volumetricLightShader = shaderManager->getShader("VolumetricLightShader");
+		volumetricLightShader->bind();
+
+		sendCascadeShadowMapInfo2Shader(volumetricLightShader, &cCam0, &cCam1, &cCam2, &cCam3);
+
+		volumetricLightShader->setMat4("viewProjectionInverseMatrix", glm::inverse(cam->GetViewProjectionMatrix()));
+		volumetricLightShader->setMat4("viewMatrix", cam->GetViewMatrix());
+		volumetricLightShader->setVector("camPos", cam->Position);
+		volumetricLightShader->setVector("camDir", cam->Front);
+		volumetricLightShader->setInt("marchingSteps", volumetricLight_steps);
+		volumetricLightShader->setFloat("marchingDistance", 100);
+		volumetricLightShader->setVector("cameraDirection", cam->Front);
+		volumetricLightShader->setFloat("farPlane", cam->far);
+		volumetricLightShader->setFloat("nearPlane", cam->near);
+
+		volumetricLightShader->setFloat("intensity", volumetricLight_intensity);
+		volumetricLightShader->setFloat("airDensity", volumetricLight_density);
+		
+		if (volumetricLight_useColor) volumetricLightShader->setVector("color", volumetricLight_color.color_vect);
+		else volumetricLightShader->setVector("color", dirlight->getColor().color_vect);
+
+		volumetricLightShader->setFloat("attenuation_linear", volumetricLight_attenuation_linear);
+		volumetricLightShader->setFloat("attenuation_quadratic", volumetricLight_attenuation_quadratic);
+
+		volumetricLightShader->setInt("screenZbuffer", 5);//seting scene_texture to texture atachment 0
+		screenRendered_fbo->bindDepthTexture(5);
+
+
+		glEnable(GL_BLEND);
+		drawFullScreenQuad(screenRendered_fbo->depthTextureID(), 5, false);//draw volumetric light over screen
+		glDisable(GL_BLEND);
+
+		glEnable(GL_DEPTH_TEST);
+
+		if (showShadowCam)
+			drawFullScreenQuad(shadow_fbo->colorTextureID());
 	}
 
-	void Engine::drawFullScreenQuad(unsigned int textureID){
+	void Engine::drawFullScreenQuad(unsigned int textureID, unsigned int textureAtachment, bool useFullScreenQuadShader){
 
-		float vertices[] = {
+		static float vertices[] = {
 			//Position		
 			 1,  1, 0.0f,	1, 1,		// top right
 			 1, -1, 0.0f,	1, 0,	// bottom right
 			-1, -1, 0.0f,	0, 0,	// bottom left
 			-1,  1, 0.0f,	0, 1	// top left 
 		};
-		unsigned int indices[] = {  // note that we start from 0!
+		static unsigned int indices[] = {  // note that we start from 0!
 			2,0,3,
 			2,1,0
 		};
@@ -544,11 +638,13 @@ namespace Engine
 		glBindVertexArray(0);
 
 
-		Shader* shader = shaderManager->getShader("FullScreenQuadShader");
-		shader->bind();
+		if (useFullScreenQuadShader) {
+			Shader* sh = shaderManager->getShader("FullScreenQuadShader");
+			sh->bind();
+		}
 
 		//bind texture
-		glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+		glActiveTexture(GL_TEXTURE0 + textureAtachment); // activate the texture unit first before binding texture
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
 

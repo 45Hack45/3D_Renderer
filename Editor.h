@@ -32,7 +32,7 @@ namespace Engine
 		static Mesh* GUI_PropertySelector(const char* propName, Mesh* currentValue);
 		static Material* GUI_PropertySelector(const char* propName, Material* currentValue);
 		static Shader* GUI_PropertySelector(const char* propName, Shader* currentValue);
-		static Texture* GUI_PropertySelector(const char* propName, Texture* currentValue);
+		static Texture_Asset* GUI_PropertySelector(const char* propName, Texture_Asset* currentValue);
 
 		//Variables-----------------------------------
 		bool showImGui_Demo = false;

@@ -1,14 +1,14 @@
 #include "Texture.h"
 
-void Texture::loadFile() {
+void Texture_Asset::loadFile() {
+
+	log_printf(LOG_INFO, "Loading image: %s", filePath.c_str());
 
 	glGenTextures(1, &m_ID);
 
 	stbi_set_flip_vertically_on_load(m_flipYImage);
 
 	m_image_data = stbi_load(filePath.c_str(), &m_width, &m_height, &m_nChannels, 0);//Load image and fill width,height and nrChannels
-
-	log_printf(LOG_INFO, "Loading image: %s", filePath.c_str());
 
 	glBindTexture(GL_TEXTURE_2D, m_ID);
 	parameters(GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR);//Default texture config. Wrap: repeat	Filter: linear

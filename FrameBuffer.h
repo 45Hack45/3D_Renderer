@@ -14,6 +14,8 @@ namespace Engine
 
 		~FrameBuffer()
 		{
+			glDeleteTextures(1, &m_ColorID);
+			glDeleteTextures(1, &m_DepthID);
 			glDeleteFramebuffers(1, &m_FramebufferID);
 		}
 
