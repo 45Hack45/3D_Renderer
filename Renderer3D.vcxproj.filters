@@ -46,6 +46,12 @@
     <Filter Include="Archivos de encabezado\Interfaces">
       <UniqueIdentifier>{fe7156a0-c753-475a-beb9-f1361c427b58}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Misc">
+      <UniqueIdentifier>{a276aedc-fe5a-473a-b826-fa5175c39a82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Misc">
+      <UniqueIdentifier>{8455dc26-058f-4161-ab42-3d87d1cca973}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
