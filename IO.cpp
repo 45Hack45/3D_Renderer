@@ -12,6 +12,7 @@ namespace Engine
 
 		//pair<Name,Path>
 		std::vector<std::pair<std::string, std::string>> shaderPaths;//contains all the project folder shaders
+		std::vector<std::pair<std::string, std::string>> computeShaderPaths;
 		std::vector<std::pair<std::string, std::string>> texturePaths;
 		std::vector<std::pair<std::string, std::string>> modelPaths;
 
@@ -21,6 +22,7 @@ namespace Engine
 		std::vector<std::string>* getFilePaths() { return &filePaths; }
 
 		std::vector<std::pair<std::string, std::string>>* getShaderPaths() { return &shaderPaths; }
+		std::vector<std::pair<std::string, std::string>>* getComputeShaderPaths() { return &computeShaderPaths; } 
 
 		std::vector<std::pair<std::string, std::string>>* getTexturesPaths() { return &texturePaths; }
 
@@ -50,6 +52,7 @@ namespace Engine
 
 			filePaths.clear();
 			shaderPaths.clear();
+			computeShaderPaths.clear();
 			texturePaths.clear();
 			modelPaths.clear();
 
@@ -74,6 +77,8 @@ namespace Engine
 				{
 					if (lExtension == ".glsl")
 						shaderPaths.push_back(std::pair<std::string, std::string>(name, path));
+					if (lExtension == ".comp")
+						computeShaderPaths.push_back(std::pair<std::string, std::string>(name, path));
 
 					else if (lExtension == ".jpg" || lExtension == ".png")
 						texturePaths.push_back(std::pair<std::string, std::string>(name, path));
@@ -106,6 +111,8 @@ namespace Engine
 				{
 					if (lExtension == ".glsl")
 						shaderPaths.push_back(std::pair<std::string, std::string>(name, path));
+					if (lExtension == ".comp")
+						computeShaderPaths.push_back(std::pair<std::string, std::string>(path, name));
 
 					else if (lExtension == ".jpg" || lExtension == ".png")
 						texturePaths.push_back(std::pair<std::string, std::string>(name, path));

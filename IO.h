@@ -21,6 +21,8 @@ namespace Engine
 
 		std::vector<std::pair<std::string, std::string>>* getShaderPaths();
 
+		std::vector<std::pair<std::string, std::string>>* getComputeShaderPaths();
+
 		std::vector<std::pair<std::string, std::string>>* getTexturesPaths();
 
 		std::vector<std::pair<std::string, std::string>>* getModelPaths();

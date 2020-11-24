@@ -135,6 +135,9 @@
     <ClCompile Include="FrameBuffer.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\khrplatform.h">
@@ -260,6 +263,9 @@
     <ClInclude Include="FrameBuffer.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="rcs\Shaders\PhongShader.frag">
@@ -287,6 +293,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="rcs\Shaders\VolumetricLightShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="rcs\Shaders\TestCompute.comp">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="rcs\Shaders\ParticleShader.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -26,9 +26,13 @@ namespace Engine
 		void Init(bool loadShaders = false) {
 			
 			std::vector< std::pair<std::string, std::string>>* shaders = IO::getShaderPaths();
+			std::vector< std::pair<std::string, std::string>>* cShaders = IO::getComputeShaderPaths();
 
 			for (std::pair<std::string, std::string> shaderPath : *(shaders))
 				AddShader(shaderPath.first, shaderPath.second, loadShaders);
+
+			for (std::pair<std::string, std::string> shaderPath : *(cShaders))
+				AddComputeShader(shaderPath.first, shaderPath.second);
 		}
 
 		void AddShader(const std::string& shaderName, const std::string& shaderPath, bool loadShader = false) {
@@ -39,6 +43,10 @@ namespace Engine
 		void AddShader(const std::string& shaderName, Shader* shader) {
 			shadersPath[shaderName] = shader->filePath;
 			shaders[shaderName] = shader;
+		}
+		void AddComputeShader(const std::string& shaderName, const std::string& shaderPath) {
+			shadersPath[shaderName] = shaderPath;
+			shaders[shaderName] = new ComputeShader(shadersPath[shaderName], shaderName);//load Shader
 		}
 
 		Shader* getShader(const std::string& shaderName) {

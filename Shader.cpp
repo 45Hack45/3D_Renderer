@@ -7,6 +7,8 @@
 #define _fragEnd	"//#End_frag"
 #define _geoBegin	"//#Begin_geo"
 #define _geogEnd	"//#End_geo"
+#define _compBegin	"//#Begin_comp"
+#define _compEnd	"//#End_comp"
 #define _propBegin	"//#Begin_prop"
 #define _propEnd	"//#End_prop"
 
@@ -278,3 +280,90 @@ void Shader::getProperties(const std::string& shaderCode) {
 	
 }
 
+void ComputeShader::loadFile()
+{
+	log_printf(log_level_e::LOG_DEBUG, "\nLoading Shader: %s", filePath.c_str());
+
+	// 1. retrieve the vertex/fragment source code from filePath
+	std::string compCode;
+	std::string shaderCode;
+	std::ifstream shaderFile;
+
+	// ensure ifstream objects can throw exceptions:
+	shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+	try
+	{
+		// open files
+		shaderFile.open(filePath);
+		std::stringstream shaderStream;
+
+		// read file's buffer contents into streams
+		shaderStream << shaderFile.rdbuf();
+
+		// close file handlers
+		shaderFile.close();
+
+		// convert stream into string
+		shaderCode = shaderStream.str();
+
+		size_t compOffset = shaderCode.find(_compBegin);
+		size_t compEndOffset = shaderCode.find(_compEnd);
+		size_t compLenght = compEndOffset - compOffset;
+
+		if (compOffset != std::string::npos)
+		{
+			if (compEndOffset == std::string::npos) {
+				log_error("ERROR::SHADER::COMPUTE_SHADER: //#End_comp not found");
+				errorOnLoad = true;
+			}
+			else
+				compCode = shaderCode.substr(compOffset, compLenght);
+		}
+		else {
+			log_error("ERROR::SHADER::COMPUTE_SHADER: Compute code not found");
+			errorOnLoad = true;
+		}
+
+
+	}catch (std::ifstream::failure& e){
+		perror("	ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ");
+		errorOnLoad = true;
+		return;
+	}
+
+	if (errorOnLoad)return;
+
+	const char* cShaderCode = compCode.c_str();
+
+	getProperties(shaderCode);
+
+
+	// 2. compile shader
+	unsigned int compute = 0;
+
+	// compute shader
+	compute = glCreateShader(GL_COMPUTE_SHADER);
+	glShaderSource(compute, 1, &cShaderCode, NULL);
+	glCompileShader(compute);
+	checkCompileErrors(compute, "COMPUTE");
+
+
+	// shader Program
+	m_ID = glCreateProgram();
+	log_printf(log_level_e::LOG_DEBUG, "	Shader Program ID: %i\n", m_ID);
+	glAttachShader(m_ID, compute);
+
+	// 3. link shader program
+	glLinkProgram(m_ID);
+	checkCompileErrors(m_ID, "PROGRAM");
+
+	// delete the shader as they're linked into our program now and no longer necessary
+	glDeleteShader(compute);
+}
+
+void ComputeShader::Dispatch(GLuint num_grups_x, GLuint num_grups_y, GLuint num_grups_z)
+{
+	this->bind();
+	glDispatchCompute(num_grups_x, num_grups_y, num_grups_z);
+}

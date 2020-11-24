@@ -17,6 +17,7 @@
 #include "Material.h"
 #include "FrameBuffer.h"
 
+#include "ParticleSystem.h"
 
 #define unlitShaderVert "./Shaders/UnlitShader.vert"
 #define unlitShaderFrag "./Shaders/UnlitShader.frag"
@@ -143,6 +144,7 @@ namespace Engine
 		screenRendered_fbo = new FrameBuffer(800 * 2, 450 * 2, FrameBuffer::FrameType_Depth | FrameBuffer::FrameType_Color, 0, GL_RGB);
 
 		log_message(log_level_e::LOG_INFO, "Engine Initialized\n");
+		return 0;
 	}
 
 	void Engine::Start() {
@@ -185,10 +187,10 @@ namespace Engine
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::scale(glm::rotate(model, glm::radians(-45.0f * 0), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(1.f, 1.f, 1.f)*1.f);
 
-		scene->loadModel2Scene(m_model);
-		Entity* m2Entity = scene->loadModel2Scene(m_model2);
+		//scene->loadModel2Scene(m_model);
+		//Entity* m2Entity = scene->loadModel2Scene(m_model2);
 		
-		if(m2Entity) m2Entity->transform.m_position = glm::vec3(0, 10, 0);
+		//if(m2Entity) m2Entity->transform.m_position = glm::vec3(0, 10, 0);
 
 		scene->m_directionalLight.setDirection(0.f, 118.f);
 		scene->m_directionalLight.m_intensity = 1.f;
@@ -217,6 +219,10 @@ namespace Engine
 		Shader* shader = shaderManager->getShader("PhongShader");
 		shader->bind();
 		
+
+		//------------Particle
+		ParticleSystem* particleSys = new ParticleSystem(glm::vec3(0.f, 2.f, 0.f), glm::vec3(10.f, 10.f, 10.f), 1, 2);
+
 
 		while (!glfwWindowShouldClose(renderer->getWindow()))
 		{
@@ -284,11 +290,15 @@ namespace Engine
 			}
 #pragma endregion
 
+			particleSys->Update();
+
 			imgui_beginFrame_();//--------------------------------------------------------------
 
 			renderer->ClearScreen(Color::Grey);
 
 			drawScene(&cam);
+
+			particleSys->Draw(&cam);
 			
 			editor->renderGui(deltaTime, &scene->m_scene, scene);
 			

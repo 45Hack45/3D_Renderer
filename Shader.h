@@ -44,7 +44,7 @@ public:
 
 	unsigned int ID()const { return m_ID; }
 
-	void loadFile();
+	virtual void loadFile();
 
 	// activate the shader
 	// ------------------------------------------------------------------------
@@ -103,7 +103,11 @@ public:
 	bool hasPropeties = false;
 	std::vector<std::string> shaderProperties;
 
-private:
+protected:
+
+	Shader(): Engine::Asset("","") {
+		m_ID = -1;
+	}
 
 	unsigned int m_ID;
 
@@ -134,6 +138,23 @@ private:
 	}
 
 	void getProperties(const std::string& shaderCode);
+
+};
+
+class ComputeShader : public Shader {
+
+public:
+	ComputeShader(const std::string& shaderPath, const std::string& shaderName): Shader() {
+		filePath = shaderPath.c_str();
+		assetName = shaderName.c_str();
+		loadFile();
+	}
+
+	void loadFile();
+
+	void Dispatch(GLuint num_grups_x, GLuint num_grups_y, GLuint num_grups_z);
+
+private:
 
 };
 

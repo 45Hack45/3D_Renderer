@@ -3,7 +3,7 @@
 
 //#Begin_vert
 
-#version 330 core
+#version 430 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoord;
 
@@ -32,7 +32,7 @@ void main()
 
 //#Begin_frag
 
-#version 330 core
+#version 430 core
 out vec4 FragColor;
 in vec3 FragPos;
 
