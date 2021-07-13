@@ -52,12 +52,6 @@
     <Filter Include="Archivos de origen\Misc">
       <UniqueIdentifier>{8455dc26-058f-4161-ab42-3d87d1cca973}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Archivos de origen\RenderPass">
-      <UniqueIdentifier>{b8677ecc-726d-4d77-9824-4494eb1b68cd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Archivos de encabezado\RenderPass">
-      <UniqueIdentifier>{f3f3b2a1-c206-4329-955e-48f33906745d}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -143,24 +137,6 @@
     </ClCompile>
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Archivos de origen</Filter>
-    </ClCompile>
-    <ClCompile Include="FluidSimulation.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
-    <ClCompile Include="VolumetricCloud.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderPass_VolumetricLight.cpp">
-      <Filter>Archivos de origen\RenderPass</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderPass_Opaque.cpp">
-      <Filter>Archivos de origen\RenderPass</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderPass_ShadowMap.cpp">
-      <Filter>Archivos de origen\RenderPass</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderPass_Transparent.cpp">
-      <Filter>Archivos de origen\RenderPass</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -290,24 +266,6 @@
     <ClInclude Include="ParticleSystem.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="FluidSimulation.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="VolumetricCloud.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderPass_Opaque.h">
-      <Filter>Archivos de encabezado\RenderPass</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderPass_VolumetricLight.h">
-      <Filter>Archivos de encabezado\RenderPass</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderPass_ShadowMap.h">
-      <Filter>Archivos de encabezado\RenderPass</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderPass_Transparent.h">
-      <Filter>Archivos de encabezado\RenderPass</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="rcs\Shaders\PhongShader.frag">
@@ -343,28 +301,5 @@
     <None Include="rcs\Shaders\ParticleShader.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="rcs\Shaders\VolumetricWaterCompute.comp">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="rcs\Shaders\VolumetricWaterRender.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="rcs\Shaders\VolumetricCloudRender.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="EngineProject\awesomeface.png">
-      <Filter>EngineProject</Filter>
-    </Image>
-    <Image Include="EngineProject\container.jpg">
-      <Filter>EngineProject</Filter>
-    </Image>
-    <Image Include="EngineProject\lights.PNG">
-      <Filter>EngineProject</Filter>
-    </Image>
-    <Image Include="EngineProject\wall.jpg">
-      <Filter>EngineProject</Filter>
-    </Image>
   </ItemGroup>
 </Project>
