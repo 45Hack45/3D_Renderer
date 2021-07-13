@@ -31,7 +31,6 @@ namespace Engine
 			m_mesh->Draw();
 		}
 
-
 		void drawEditorGUI_Properties();
 
 		Mesh* m_mesh;

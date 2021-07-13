@@ -84,11 +84,11 @@ namespace Engine
 
                 //mesh bounding box
                 m_meshes[j].bBox.min = glm::min(m_meshes[j].bBox.min, vector);
-                m_meshes[j].bBox.max = glm::min(m_meshes[j].bBox.max, vector);
+                m_meshes[j].bBox.max = glm::max(m_meshes[j].bBox.max, vector);
 
                 //Model bounding box
                 bBox.min = glm::min(bBox.min, vector);
-                bBox.max = glm::min(bBox.max, vector);
+                bBox.max = glm::max(bBox.max, vector);
 
                 // normals
                 vector.x = mesh->mNormals[i].x;

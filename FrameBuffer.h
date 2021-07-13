@@ -22,8 +22,8 @@ namespace Engine
 		//Binds the frame buffer
 		//if changeViewport is true the viewport will be set to the framebuffer dimensions
 		void bind(bool changeViewport = false);
-		void bindColorTexture(int textureUnit = 0);
-		void bindDepthTexture(int textureUnit = 1);
+		void bindColorTexture(int textureUnit = 0) const;
+		void bindDepthTexture(int textureUnit = 1) const;
 
 
 		//Unbinds any binded framebuffer and sets the screen as the render target

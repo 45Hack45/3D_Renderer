@@ -44,6 +44,11 @@ namespace Engine
 		Entity*	addChild();
 		void addChild(Entity* entity);
 
+		//void addComponent(Component component) { 
+		//	//component.entity = this; 
+		//	components.push_back(component);
+		//}
+
 		//Variables-----------------------------------
 
 		std::string name;
