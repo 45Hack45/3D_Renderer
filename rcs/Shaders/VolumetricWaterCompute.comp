@@ -1,0 +1,32 @@
+//#Begin_prop
+//#End_prop
+
+//#Begin_comp
+#version 430 core
+
+#extension GL_ARB_compute_shader : enable
+#extension GL_ARB_shader_storage_buffer_object : enable
+
+uniform float timestep;
+uniform float rdx;		// 1 / grid scale
+uniform int gridResolution;
+
+uniform float alpha;
+uniform float beta;
+
+uniform sampler3D cVelocity;
+layout (binding = 0) uniform image3D nVelocity;
+
+
+layout( local_size_x = 8, local_size_y = 8, local_size_z = 8 ) in;
+
+vec4 test(in sampler3D myTexture,vec3 coord){
+	return texture(myTexture,coord);
+}
+
+void main() {
+	test(cVelocity,vec3(0,0,0));
+	imageStore (nVelocity, ivec3(0,0,0), vec4(0));
+}
+//#End_comp
+

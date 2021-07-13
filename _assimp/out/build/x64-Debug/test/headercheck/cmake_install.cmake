@@ -1,8 +1,8 @@
-# Install script for directory: D:/Users/Hack45/source/repos/Renderer3D/_assimp/test/headercheck
+# Install script for directory: C:/Users/Hack45/source/repos/Renderer3D/_assimp/test/headercheck
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "D:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug")
+  set(CMAKE_INSTALL_PREFIX "C:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

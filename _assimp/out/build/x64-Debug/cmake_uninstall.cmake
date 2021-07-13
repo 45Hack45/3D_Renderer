@@ -1,8 +1,8 @@
-IF(NOT EXISTS "D:/Users/Hack45/source/repos/Renderer3D/_assimp/out/build/x64-Debug/install_manifest.txt")
-  MESSAGE(FATAL_ERROR "Cannot find install manifest: \"D:/Users/Hack45/source/repos/Renderer3D/_assimp/out/build/x64-Debug/install_manifest.txt\"")
-ENDIF(NOT EXISTS "D:/Users/Hack45/source/repos/Renderer3D/_assimp/out/build/x64-Debug/install_manifest.txt")
+IF(NOT EXISTS "C:/Users/Hack45/source/repos/Renderer3D/_assimp/out/build/x64-Debug/install_manifest.txt")
+  MESSAGE(FATAL_ERROR "Cannot find install manifest: \"C:/Users/Hack45/source/repos/Renderer3D/_assimp/out/build/x64-Debug/install_manifest.txt\"")
+ENDIF(NOT EXISTS "C:/Users/Hack45/source/repos/Renderer3D/_assimp/out/build/x64-Debug/install_manifest.txt")
 
-FILE(READ "D:/Users/Hack45/source/repos/Renderer3D/_assimp/out/build/x64-Debug/install_manifest.txt" files)
+FILE(READ "C:/Users/Hack45/source/repos/Renderer3D/_assimp/out/build/x64-Debug/install_manifest.txt" files)
 STRING(REGEX REPLACE "\n" ";" files "${files}")
 FOREACH(file ${files})
   MESSAGE(STATUS "Uninstalling \"$ENV{DESTDIR}${file}\"")

@@ -1,5 +1,5 @@
-prefix=D:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug
-exec_prefix=D:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug
+prefix=C:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug
+exec_prefix=C:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug
 libdir=
 sharedlibdir=
 includedir=

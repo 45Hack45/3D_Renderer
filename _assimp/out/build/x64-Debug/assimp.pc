@@ -1,7 +1,7 @@
-prefix=D:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug
-exec_prefix=D:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug/
-libdir=D:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug/lib
-includedir=D:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug/../include/include
+prefix=C:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug
+exec_prefix=C:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug/
+libdir=C:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug/lib
+includedir=C:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug/../include/include
 
 Name: Assimp
 Description: Import various well-known 3D model formats in an uniform manner.

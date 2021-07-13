@@ -83,7 +83,7 @@ void main()
 
     float density = calcLightDensity( camPos, ray_dir, marchingSteps, marchingDistance, obstaculeZ);
 
-    FragColor = vec4(color.xyz, density*intensity);
+    FragColor += vec4(color.xyz, density*intensity);
 }
 
 float LinearizeDepth(float depth){

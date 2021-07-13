@@ -1,8 +1,8 @@
-# Install script for directory: D:/Users/Hack45/source/repos/Renderer3D/_assimp/contrib/irrXML
+# Install script for directory: C:/Users/Hack45/source/repos/Renderer3D/_assimp/contrib/irrXML
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "D:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug")
+  set(CMAKE_INSTALL_PREFIX "C:/Users/Hack45/source/repos/Renderer3D/_assimp/out/install/x64-Debug")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,6 +33,6 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "D:/Users/Hack45/source/repos/Renderer3D/_assimp/out/build/x64-Debug/contrib/irrXML/IrrXMLd.lib")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/Hack45/source/repos/Renderer3D/_assimp/out/build/x64-Debug/contrib/irrXML/IrrXMLd.lib")
 endif()
 
