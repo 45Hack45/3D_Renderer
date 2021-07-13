@@ -143,6 +143,7 @@
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="FluidSimulation.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="include\imgui\examples\imgui_impl_glfw.cpp" />
@@ -161,10 +162,15 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RenderPass_Opaque.cpp" />
+    <ClCompile Include="RenderPass_ShadowMap.cpp" />
+    <ClCompile Include="RenderPass_Transparent.cpp" />
+    <ClCompile Include="RenderPass_VolumetricLight.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="VolumetricCloud.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asset.h" />
@@ -174,6 +180,7 @@
     <ClInclude Include="Editor.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="FluidSimulation.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="IEditorGUISelectable.h" />
     <ClInclude Include="include\imgui\examples\imgui_impl_glfw.h" />
@@ -201,6 +208,10 @@
     <ClInclude Include="ModelManager.hpp" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RenderPass_Opaque.h" />
+    <ClInclude Include="RenderPass_ShadowMap.h" />
+    <ClInclude Include="RenderPass_Transparent.h" />
+    <ClInclude Include="RenderPass_VolumetricLight.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderManager.hpp" />
@@ -209,6 +220,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureManager.hpp" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="VolumetricCloud.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="rcs\Shaders\FullScreenQuadShader.glsl" />
@@ -221,7 +233,16 @@
     <None Include="rcs\Shaders\UnlitShader.frag" />
     <None Include="rcs\Shaders\UnlitShader.glsl" />
     <None Include="rcs\Shaders\UnlitShader.vert" />
+    <None Include="rcs\Shaders\VolumetricCloudRender.glsl" />
     <None Include="rcs\Shaders\VolumetricLightShader.glsl" />
+    <None Include="rcs\Shaders\VolumetricWaterCompute.comp" />
+    <None Include="rcs\Shaders\VolumetricWaterRender.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="EngineProject\awesomeface.png" />
+    <Image Include="EngineProject\container.jpg" />
+    <Image Include="EngineProject\lights.PNG" />
+    <Image Include="EngineProject\wall.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
