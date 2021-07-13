@@ -106,10 +106,6 @@ namespace Engine
 
 		void drawScene(Camera* cam);
 
-		//draws a full screen quad with a texture.
-		//if useFullScreenQuadShader is false will use the previously binded shader (useful for sending shader info for postprocessing effects)
-		void drawFullScreenQuad(unsigned int textureID,  unsigned int textureAtachment = 0, bool useFullScreenQuadShader = true);
-
 		// A typedef to make for easier reading
 		typedef bool (*RenderEntity_Callback)(Entity*, Shader*);
 

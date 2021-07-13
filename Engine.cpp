@@ -18,6 +18,12 @@
 #include "FrameBuffer.h"
 
 #include "ParticleSystem.h"
+#include "FluidSimulation.h"
+#include "VolumetricCloud.h"
+
+#include "RenderPass_ShadowMap.h"
+#include "RenderPass_Opaque.h"
+#include "RenderPass_Transparent.h"
 
 #define unlitShaderVert "./Shaders/UnlitShader.vert"
 #define unlitShaderFrag "./Shaders/UnlitShader.frag"
@@ -43,6 +49,10 @@ namespace Engine
 	Camera cCam0, cCam1, cCam2, cCam3;
 	glm::vec3 auxPosOffset;
 	float shadowBias = 16, shadowBiasMax = 8;
+
+	RenderPass_ShadowMap* RP_shadowMap;
+	RenderPass_Opaque* RP_opaque;
+	RenderPass_Transparent* RP_transparent;
 
 	
 	void initImgui(GLFWwindow* window, bool darkMode = true) {
@@ -104,6 +114,8 @@ namespace Engine
 			return -1;
 		}
 
+		renderer->InitRenderFBO();
+
 		//Init imgui
 		initImgui(renderer->m_window);
 
@@ -136,6 +148,10 @@ namespace Engine
 
 		std::cout << "Shadowmap Cascades: ";
 		std::cin >> shadowMap_nCascades;*/
+
+		RP_shadowMap = new RenderPass_ShadowMap();
+		RP_opaque = new RenderPass_Opaque();
+		RP_transparent = new RenderPass_Transparent();
 
 		shadowMap_nCascades = std::clamp(shadowMap_nCascades, 1, maxCascadeShadowMaps);
 
@@ -187,10 +203,10 @@ namespace Engine
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::scale(glm::rotate(model, glm::radians(-45.0f * 0), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(1.f, 1.f, 1.f)*1.f);
 
-		//scene->loadModel2Scene(m_model);
-		//Entity* m2Entity = scene->loadModel2Scene(m_model2);
+		scene->loadModel2Scene(m_model);
+		Entity* m2Entity = scene->loadModel2Scene(m_model2);
 		
-		//if(m2Entity) m2Entity->transform.m_position = glm::vec3(0, 10, 0);
+		if(m2Entity) m2Entity->transform.m_position = glm::vec3(0, 10, 0);
 
 		scene->m_directionalLight.setDirection(0.f, 118.f);
 		scene->m_directionalLight.m_intensity = 1.f;
@@ -223,6 +239,26 @@ namespace Engine
 		//------------Particle
 		ParticleSystem* particleSys = new ParticleSystem(glm::vec3(0.f, 2.f, 0.f), glm::vec3(10.f, 10.f, 10.f), 1, 2);
 
+		//------------Fluid
+		FluidSimulation* fluidSim = new FluidSimulation(64, 64, 64);
+
+		//------------Cloud
+		VolumetricCloud* vCloud = new VolumetricCloud(64, 64, 64);
+		vCloud->setChanelResolution(10,0,0,0);
+		vCloud->GenerateVoronoiPoints();
+		vCloud->GenerateClouds();
+
+		RP_shadowMap->setScene(scene);
+		RP_shadowMap->setMainCamera(&cam);
+
+		RP_opaque->setScene(scene);
+		RP_opaque->setMainCamera(&cam);
+
+		RP_transparent->setScene(scene);
+		RP_transparent->setMainCamera(&cam);
+
+		RP_opaque->setShadowmapCameras(RP_shadowMap->getAuxShadowmapCameras());
+		RP_transparent->setShadowmapCameras(RP_shadowMap->getAuxShadowmapCameras());
 
 		while (!glfwWindowShouldClose(renderer->getWindow()))
 		{
@@ -290,18 +326,73 @@ namespace Engine
 			}
 #pragma endregion
 
-			particleSys->Update();
+			//particleSys->Update();
+			//fluidSim->Update();
+			//vCloud->Update();
 
 			imgui_beginFrame_();//--------------------------------------------------------------
 
-			renderer->ClearScreen(Color::Grey);
+			//renderer->ClearScreen(Color::Red);
 
-			drawScene(&cam);
+			glClearColor(.25, .25, .25, 1);
+			glClear(GL_COLOR_BUFFER_BIT);
 
-			particleSys->Draw(&cam);
+			glClearColor(1, 1, 1, 1);
+			glClear(GL_DEPTH_BUFFER_BIT);
+
+			static bool showShadowmapCam = false;
+
+			if (input->isKeyPressed(Input::KeyboardCode::KEY_CODE_Q))showShadowmapCam = true;
+			if (input->isKeyPressed(Input::KeyboardCode::KEY_CODE_E))showShadowmapCam = false;
+
+			RP_shadowMap->RenderPass(0);
+
+			FrameBuffer::unbind();
+
+			glViewport(0, 0, renderer->getWindowSizeX(), renderer->getWindowSizeY());
+
+			RP_opaque->RenderPass(RP_shadowMap->getFBO());
+			RP_transparent->RenderPass(RP_shadowMap->getFBO());
+
+			if(showShadowmapCam)
+				Renderer::drawFullScreenQuad(RP_shadowMap->getFBO()->colorTextureID());
+
+			//drawScene(&cam);
+
+			//particleSys->Draw(&cam);
+			//fluidSim->Draw(&cam);
+			//vCloud->Draw(&cam);
+			
+			//if (ImGui::Begin("Volumetric Cloud")) {
+			//	bool update = false;
+
+			//	if (ImGui::SliderFloat("CutOff", &vCloud->cutOff, 0, 1))
+			//		update = true;
+			//	if (ImGui::SliderFloat("CutOff Smothnes", &vCloud->cutOffSmothnes, 0, 0.2))
+			//		update = true;
+			//	if (ImGui::SliderFloat("heightCutoff", &vCloud->heightCutoff, 0, 1))
+			//		update = true;
+
+			//	static glm::ivec4 vCloudChanelsPoints = glm::ivec4(10,0,0,0);
+
+			//	if (ImGui::SliderInt4("VoronoiPoints", (int*)&vCloudChanelsPoints, 0, 50)) {
+			//		update = true;
+			//		vCloud->setChanelResolution(vCloudChanelsPoints.x, vCloudChanelsPoints.y, vCloudChanelsPoints.z, vCloudChanelsPoints.w);
+			//		vCloud->GenerateVoronoiPoints();
+			//	}
+
+			//	if (update) {
+			//		vCloud->GenerateClouds();
+			//	}
+			//}
+			//ImGui::End();
+
+			RP_shadowMap->RenderPassDebugGUI();
+			RP_opaque->RenderPassDebugGUI();
+			RP_transparent->RenderPassDebugGUI();
 			
 			editor->renderGui(deltaTime, &scene->m_scene, scene);
-			
+
 			imgui_RenderFrame();//**************************************************************
 
 			glfwSwapBuffers(renderer->getWindow());//Update screen
@@ -427,7 +518,7 @@ namespace Engine
 	{
 		
 		static float auxCamDistance = 500.f;
-		static float camDirOffsetFactor = 16.f;
+		static float camDirOffsetFactor = 16.f*0;
 
 		static bool  volumetricLight_useColor = false;
 		static Color volumetricLight_color = Color::White;
@@ -538,8 +629,11 @@ namespace Engine
 
 		screenRendered_fbo->bind(true);//world render pass---------------------------------------------------------
 
+		glClearColor(.5,.5,.5, 1);
+		glClear(GL_COLOR_BUFFER_BIT);
+
 		glClearColor(1, 1, 1, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT);
 
 		
 		//opaque pass
@@ -566,10 +660,12 @@ namespace Engine
 		if (gammaCorrection)
 			glEnable(GL_FRAMEBUFFER_SRGB);
 
-		drawFullScreenQuad(screenRendered_fbo->colorTextureID());//draw screen
+		Renderer::drawFullScreenQuad(screenRendered_fbo->colorTextureID());//draw screen
 
 		if (gammaCorrection)
 			glDisable(GL_FRAMEBUFFER_SRGB);
+
+		//------------------------------------------Render Volumetric Light---------------------------------------------
 
 		Shader* volumetricLightShader = shaderManager->getShader("VolumetricLightShader");
 		volumetricLightShader->bind();
@@ -600,70 +696,13 @@ namespace Engine
 
 
 		glEnable(GL_BLEND);
-		drawFullScreenQuad(screenRendered_fbo->depthTextureID(), 5, false);//draw volumetric light over screen
+		Renderer::drawFullScreenQuad(screenRendered_fbo->depthTextureID(), 5, false);//draw volumetric light over screen
 		glDisable(GL_BLEND);
 
-		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST);//-------------------------------------------------------------------------------------
 
 		if (showShadowCam)
-			drawFullScreenQuad(shadow_fbo->colorTextureID());
-	}
-
-	void Engine::drawFullScreenQuad(unsigned int textureID, unsigned int textureAtachment, bool useFullScreenQuadShader){
-
-		static float vertices[] = {
-			//Position		
-			 1,  1, 0.0f,	1, 1,		// top right
-			 1, -1, 0.0f,	1, 0,	// bottom right
-			-1, -1, 0.0f,	0, 0,	// bottom left
-			-1,  1, 0.0f,	0, 1	// top left 
-		};
-		static unsigned int indices[] = {  // note that we start from 0!
-			2,0,3,
-			2,1,0
-		};
-		unsigned int VBO, VAO, EBO;
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
-		glGenBuffers(1, &EBO);
-		// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-		glBindVertexArray(VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-		// position attribute
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-		// uv attribute
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);
-
-		// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		glBindVertexArray(0);
-
-
-		if (useFullScreenQuadShader) {
-			Shader* sh = shaderManager->getShader("FullScreenQuadShader");
-			sh->bind();
-		}
-
-		//bind texture
-		glActiveTexture(GL_TEXTURE0 + textureAtachment); // activate the texture unit first before binding texture
-		glBindTexture(GL_TEXTURE_2D, textureID);
-
-
-		glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		glDeleteVertexArrays(1, &VAO);
-		glDeleteBuffers(1, &VBO);
-		glDeleteBuffers(1, &EBO);
+			Renderer::drawFullScreenQuad(shadow_fbo->colorTextureID());
 	}
 
 	void Engine::renderPass(Camera* cam, RenderEntity_Callback func){
