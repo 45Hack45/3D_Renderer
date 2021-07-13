@@ -98,12 +98,12 @@ namespace Engine
 		if(changeViewport)
 			glViewport(0, 0, m_width, m_height);
 	}
-	void FrameBuffer::bindColorTexture(int textureUnit)
+	void FrameBuffer::bindColorTexture(int textureUnit) const
 	{
 		glActiveTexture(GL_TEXTURE0 + textureUnit); // activate the texture unit first before binding texture
 		glBindTexture(GL_TEXTURE_2D, m_ColorID);
 	}
-	void FrameBuffer::bindDepthTexture(int textureUnit)
+	void FrameBuffer::bindDepthTexture(int textureUnit) const
 	{
 		glActiveTexture(GL_TEXTURE0 + textureUnit); // activate the texture unit first before binding texture
 		glBindTexture(GL_TEXTURE_2D, m_DepthID);

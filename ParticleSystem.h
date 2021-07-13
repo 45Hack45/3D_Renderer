@@ -45,6 +45,10 @@ namespace Engine
 		};
 
 		struct pos* points;
+
+		float random(float min, float max) {
+			return min + (((rand() % 100) * 1.f) / 100.f) * max;
+		}
 	};
 }
 

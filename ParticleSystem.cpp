@@ -20,10 +20,6 @@ float quadVertices[] = {
 
 namespace Engine {
 
-	float random(float min, float max) {
-		return min + (((rand() % 100)*1.f) / 100.f) * max;
-	}
-
 	ParticleSystem::ParticleSystem(glm::vec3 boundBoxMin, glm::vec3 boundBoxMax, float minVelocity, float maxVelocity)
 	{
 
@@ -108,7 +104,7 @@ namespace Engine {
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, velSSbo);
 
 		cShader->Dispatch(NUM_PARTICLES / WORK_GROUP_SIZE, 1, 1);
-		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);//Aply changes
 	}
 	void ParticleSystem::Draw(Camera* cam)
 	{
