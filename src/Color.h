@@ -1,5 +1,5 @@
 #pragma once
-#include "include/glm/glm.hpp"
+#include "glm/glm.hpp"
 
 struct Color {
 	Color(float r, float g, float b, float a) {

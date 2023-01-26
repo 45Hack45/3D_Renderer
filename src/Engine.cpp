@@ -4,9 +4,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "include/imgui/imgui.h"
-#include "include/imgui/examples/imgui_impl_glfw.h"
-#include "include/imgui/examples/imgui_impl_opengl3.h"
+#include "imgui/imgui.h"
+#include "imgui/examples/imgui_impl_glfw.h"
+#include "imgui/examples/imgui_impl_opengl3.h"
 
 #include <stdlib.h>
 #include <map>
