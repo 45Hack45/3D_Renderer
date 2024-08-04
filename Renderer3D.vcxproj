@@ -70,12 +70,17 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>.\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Hack45\source\repos\Renderer3D\include;.\include;$(IncludePath);C:\Users\Hack45\source\repos\Renderer3D\include</IncludePath>
     <LibraryPath>.\lib;$(LibraryPath)</LibraryPath>
+    <PublicIncludeDirectories>$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>.\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>.\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PublicIncludeDirectories>$(PublicIncludeDirectories)</PublicIncludeDirectories>
+    <IncludePath>C:\Users\Hack45\source\repos\Renderer3D\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);;C:\Users\Hack45\source\repos\Renderer3D\include</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -137,52 +142,53 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Asset.cpp" />
-    <ClCompile Include="Color.cpp" />
-    <ClCompile Include="Component.cpp" />
-    <ClCompile Include="Editor.cpp" />
-    <ClCompile Include="Engine.cpp" />
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="FluidSimulation.cpp" />
-    <ClCompile Include="FrameBuffer.cpp" />
-    <ClCompile Include="glad.c" />
+    <ClCompile Include="src\Asset.cpp" />
+    <ClCompile Include="src\Color.cpp" />
+    <ClCompile Include="src\Component.cpp" />
+    <ClCompile Include="src\Editor.cpp" />
+    <ClCompile Include="src\Engine.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
+    <ClCompile Include="src\FluidSimulation.cpp" />
+    <ClCompile Include="src\FrameBuffer.cpp" />
+    <ClCompile Include="src\glad.c" />
     <ClCompile Include="include\imgui\examples\imgui_impl_glfw.cpp" />
     <ClCompile Include="include\imgui\examples\imgui_impl_opengl3.cpp" />
     <ClCompile Include="include\imgui\imgui.cpp" />
     <ClCompile Include="include\imgui\imgui_demo.cpp" />
     <ClCompile Include="include\imgui\imgui_draw.cpp" />
     <ClCompile Include="include\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="Input.cpp" />
-    <ClCompile Include="IO.cpp" />
-    <ClCompile Include="logger.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Material.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="MeshRenderer.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="ParticleSystem.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="RenderPass_Opaque.cpp" />
-    <ClCompile Include="RenderPass_ShadowMap.cpp" />
-    <ClCompile Include="RenderPass_Transparent.cpp" />
-    <ClCompile Include="RenderPass_VolumetricLight.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="Transform.cpp" />
-    <ClCompile Include="VolumetricCloud.cpp" />
+    <ClCompile Include="src\Input.cpp" />
+    <ClCompile Include="src\IO.cpp" />
+    <ClCompile Include="src\logger.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Material.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\MeshRenderer.cpp" />
+    <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\ParticleSystem.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\RenderPass_Opaque.cpp" />
+    <ClCompile Include="src\RenderPass_ShadowMap.cpp" />
+    <ClCompile Include="src\RenderPass_Transparent.cpp" />
+    <ClCompile Include="src\RenderPass_VolumetricLight.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\Transform.cpp" />
+    <ClCompile Include="src\VolumetricCloud.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Asset.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Color.h" />
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="Editor.h" />
-    <ClInclude Include="Engine.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="FluidSimulation.h" />
-    <ClInclude Include="FrameBuffer.h" />
-    <ClInclude Include="IEditorGUISelectable.h" />
+    <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="src\Asset.h" />
+    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Color.h" />
+    <ClInclude Include="src\Component.h" />
+    <ClInclude Include="src\Editor.h" />
+    <ClInclude Include="src\Engine.h" />
+    <ClInclude Include="src\Entity.h" />
+    <ClInclude Include="src\FluidSimulation.h" />
+    <ClInclude Include="src\FrameBuffer.h" />
+    <ClInclude Include="src\IEditorGUISelectable.h" />
     <ClInclude Include="include\imgui\examples\imgui_impl_glfw.h" />
     <ClInclude Include="include\imgui\examples\imgui_impl_opengl3.h" />
     <ClInclude Include="include\imgui\imconfig.h" />
@@ -191,36 +197,35 @@
     <ClInclude Include="include\imgui\imstb_rectpack.h" />
     <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\imgui\imstb_truetype.h" />
-    <ClInclude Include="IO.h" />
+    <ClInclude Include="src\IO.h" />
     <ClInclude Include="include\glad.h" />
     <ClInclude Include="include\glfw3.h" />
     <ClInclude Include="include\glfw3native.h" />
     <ClInclude Include="include\khrplatform.h" />
-    <ClInclude Include="Input.h" />
-    <ClInclude Include="KeyCode.hpp" />
-    <ClInclude Include="LightSource.h" />
-    <ClInclude Include="logger.h" />
-    <ClInclude Include="Material.h" />
-    <ClInclude Include="MaterialManager.hpp" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="MeshRenderer.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="ModelManager.hpp" />
-    <ClInclude Include="ParticleSystem.h" />
-    <ClInclude Include="Renderer.h" />
-    <ClInclude Include="RenderPass_Opaque.h" />
-    <ClInclude Include="RenderPass_ShadowMap.h" />
-    <ClInclude Include="RenderPass_Transparent.h" />
-    <ClInclude Include="RenderPass_VolumetricLight.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="ShaderManager.hpp" />
-    <ClInclude Include="stb_image.h" />
-    <ClInclude Include="TestRender.hpp" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="TextureManager.hpp" />
-    <ClInclude Include="Transform.h" />
-    <ClInclude Include="VolumetricCloud.h" />
+    <ClInclude Include="src\Input.h" />
+    <ClInclude Include="src\KeyCode.hpp" />
+    <ClInclude Include="src\LightSource.h" />
+    <ClInclude Include="src\logger.h" />
+    <ClInclude Include="src\Material.h" />
+    <ClInclude Include="src\MaterialManager.hpp" />
+    <ClInclude Include="src\Mesh.h" />
+    <ClInclude Include="src\MeshRenderer.h" />
+    <ClInclude Include="src\Model.h" />
+    <ClInclude Include="src\ModelManager.hpp" />
+    <ClInclude Include="src\ParticleSystem.h" />
+    <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\RenderPass_Opaque.h" />
+    <ClInclude Include="src\RenderPass_ShadowMap.h" />
+    <ClInclude Include="src\RenderPass_Transparent.h" />
+    <ClInclude Include="src\RenderPass_VolumetricLight.h" />
+    <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\ShaderManager.hpp" />
+    <ClInclude Include="src\TestRender.hpp" />
+    <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\TextureManager.hpp" />
+    <ClInclude Include="src\Transform.h" />
+    <ClInclude Include="src\VolumetricCloud.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="rcs\Shaders\FullScreenQuadShader.glsl" />

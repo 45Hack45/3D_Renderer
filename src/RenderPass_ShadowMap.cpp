@@ -39,8 +39,8 @@ namespace Engine
 			ImGui::DragFloat("Horizontal", &auxCams[0].ortoFrustrum_Horizontal);
 			ImGui::DragFloat("Vertical", &auxCams[0].ortoFrustrum_Vertical);
 
-			ImGui::DragFloat("Near", &auxCams[0].near);
-			ImGui::DragFloat("Far", &auxCams[0].far);
+			ImGui::DragFloat("Near", &auxCams[0].nearClip);
+			ImGui::DragFloat("Far", &auxCams[0].farClip);
 
 			ImGui::Spacing();
 			ImGui::Spacing();
@@ -62,19 +62,19 @@ namespace Engine
 
 		shader->setVector("lightPos", lightPos);
 
-		shader->setFloat("far_plane", auxCams[0].far);
+		shader->setFloat("far_plane", auxCams[0].farClip);
 		glViewport(0, 0, res, res);
 		renderPass(&auxCams[0]);
 
-		shader->setFloat("far_plane", auxCams[1].far);
+		shader->setFloat("far_plane", auxCams[1].farClip);
 		glViewport(res, 0, res, res);
 		renderPass(&auxCams[1]);
 
-		shader->setFloat("far_plane", auxCams[2].far);
+		shader->setFloat("far_plane", auxCams[2].farClip);
 		glViewport(res * 2, 0, res, res);
 		renderPass(&auxCams[2]);
 
-		shader->setFloat("far_plane", auxCams[0].far);
+		shader->setFloat("far_plane", auxCams[0].farClip);
 		glViewport(res * 3, 0, res, res);
 		renderPass(&auxCams[0]);
 	}
@@ -87,9 +87,6 @@ namespace Engine
 
 		view = cam->GetViewMatrix();
 
-		float near = .01f;
-		float far = 1000.0f;
-
 		projection *= cam->GetProjectionMatrix();
 
 		shader->setMat4("view", view);
@@ -101,7 +98,7 @@ namespace Engine
 
 		for (auto entity : scene->entities) {
 
-			if (!entity->meshRenderer.m_material || !entity->meshRenderer.m_mesh)//doesn't have material or mesh
+			if (entity->meshRenderer.m_material == nullptr || entity->meshRenderer.m_mesh == nullptr)//doesn't have material or mesh
 				continue;
 
 			glm::mat4 model = entity->transform.globalSpace();

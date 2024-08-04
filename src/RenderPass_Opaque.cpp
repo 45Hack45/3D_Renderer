@@ -1,23 +1,27 @@
-#include "RenderPass_Transparent.h"
+#include "RenderPass_Opaque.h"
 
 namespace Engine
 {
 	const int _PI = 3.14159265359;
 
-	const FrameBuffer* RenderPass_Transparent::RenderPass(const FrameBuffer* in_fbo)
+	//Render opaque objects.
+	//Expecting in_fbo = shadowmap fbo
+	const FrameBuffer* RenderPass_Opaque::RenderPass(const FrameBuffer* in_fbo)
 	{
-		/*glClearColor(1, 1, 1, 1);
+		//Renderer::Instance()->fbo->bind();
+
+		glClearColor(1, 1, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glClearColor(1, 1, 1, 1);
-		glClear(GL_DEPTH_BUFFER_BIT);*/
+		glClear(GL_DEPTH_BUFFER_BIT);
 
 		for (auto entity : m_scene->entities) {
 
 			if (!entity->meshRenderer.m_material || !entity->meshRenderer.m_mesh)//doesn't have material or mesh
 				continue;
 
-			if (!entity->meshRenderer.m_material->isTransparent)//evaluate the entity
+			if (entity->meshRenderer.m_material->isTransparent)//evaluate the entity
 				continue;
 
 			Shader* shader = entity->meshRenderer.m_material->m_shader;
@@ -39,21 +43,31 @@ namespace Engine
 		return in_fbo;
 	}
 
-	void RenderPass_Transparent::RenderPassDebugGUI()
+	void RenderPass_Opaque::RenderPassDebugGUI()
 	{
+		if (ImGui::Begin("Shadowmap")) {
+			ImGui::Spacing();
+			ImGui::Spacing();
+			ImGui::DragFloat("shadowBias", &shadowBias);
+			ImGui::DragFloat("shadowBiasMax", &shadowBiasMax);
+		}
+		ImGui::End();
 
+		if (ImGui::Begin("Debug")) {
+			ImGui::Spacing();
+			ImGui::Spacing();
+			ImGui::SliderFloat("ambientLight", &ambientLight,0,1);
+		}
+		ImGui::End();
 	}
 
-	void RenderPass_Transparent::sendProjectionInfo2Shader(Shader* shader, Camera* cam)
+	void RenderPass_Opaque::sendProjectionInfo2Shader(Shader* shader, Camera* cam)
 	{
 		glm::mat4 view = glm::mat4(1.0f);
 
 		glm::mat4 projection = glm::mat4(1.f);
 
 		view = cam->GetViewMatrix();
-
-		float near = .01f;
-		float far = 1000.0f;
 
 		projection *= cam->GetProjectionMatrix();
 
@@ -62,8 +76,7 @@ namespace Engine
 		shader->setVector("viewPos", cam->Position);
 	}
 
-	void RenderPass_Transparent::sendCascadeShadowMapInfo2Shader(Shader* shader, const FrameBuffer* shadow_fbo)
-	{
+	void RenderPass_Opaque::sendCascadeShadowMapInfo2Shader(Shader* shader, const FrameBuffer* shadow_fbo) {
 		shader->setInt("shadowMap", 15);//set shadowMap sampler to active texture 15
 		shadow_fbo->bindDepthTexture(15);//bind depth texture to active texture 15
 
@@ -78,8 +91,8 @@ namespace Engine
 		shader->setFloat("shadowBiasMax", shadowBiasMax * .00001f);
 	}
 
-	void RenderPass_Transparent::sendLightInfo2Shader(Shader* shader, const std::vector<LightSource_Point>& pointLights, std::vector<LightSource_Spot>& spotLights, const LightSource_Directional& dirLight)
-	{
+	void RenderPass_Opaque::sendLightInfo2Shader(Shader* shader, const std::vector<LightSource_Point>& pointLights, std::vector<LightSource_Spot>& spotLights, const LightSource_Directional& dirLight) {
+
 		//Setting directional light
 		shader->setFloat("lightsrc_directional_intensity", dirLight.getIntensity());
 		shader->setVector("lightsrc_directional_color", dirLight.getColor().getColorVec());
@@ -128,4 +141,6 @@ namespace Engine
 		shader->setInt("nPointLights", pointLights.size());
 		shader->setInt("nSpotLights", spotLights.size());
 	}
+
+
 }

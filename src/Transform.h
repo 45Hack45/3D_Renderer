@@ -15,6 +15,9 @@ namespace Engine
 	{
 	public:
 		//Methods-------------------------------------
+		Transform(){
+			parent = nullptr;
+		}
 		glm::mat4 localSpace()const;
 		glm::mat4 globalSpace()const;
 		glm::vec3 globalPosition()const;
@@ -32,8 +35,8 @@ namespace Engine
 		char* entityName;
 
 		//Local transform info
-		glm::vec3 m_position;
-		glm::vec3 m_eulerAngle;//TODO: Change euler angles t quaternions
+		glm::vec3 m_position = glm::vec3(0.f);
+		glm::vec3 m_eulerAngle = glm::vec3(0.f);//TODO: Change euler angles t quaternions
 		glm::vec3 m_scale = glm::vec3(1.f);
 
 	private:

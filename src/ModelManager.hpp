@@ -27,31 +27,40 @@ namespace Engine
 			
 			std::vector< std::pair<std::string, std::string>>* models = IO::getModelPaths();
 
-			for (std::pair<std::string, std::string> modelPath : *(models))
+			std::cout << "Adding models:" << std::endl;
+			std::cout << "	Number of models: " << models->size() << std::endl;
+			for (std::pair<std::string, std::string> modelPath : *(models)){
+				std::cout << "		Adding model: " << modelPath.first << std::endl;
 				AddModel(modelPath.first, modelPath.second, loadModels);
+			}
 		}
 
 		void AddModel(const std::string& modelName, const std::string& modelPath, bool loadModel = false) {
+			std::cout << "			Model path: " << modelPath << std::endl;
 			modelsPath[modelName] = modelPath;
 			if (loadModel) {
-				models[modelName] = new Model(modelsPath[modelName].c_str(), modelName);//load model
-				models[modelName]->loadFile();
+				std::cout << "			Loading model: " << modelPath << std::endl;
+				// TODO: Window not opening when this code is discommented!!!!!!
+				// maybe it's crashing on startup
+				// TODO: When the program crashes no error is shown (windows crash popup)!!!!!!!!!
+				// models[modelName] = new Model(modelsPath[modelName].c_str(), modelName); //load model
+				// models[modelName]->loadFile();
 			}
 		}
 
 		Model* getModel(const std::string& modelName, bool loadModel = true, bool flipUVs = false) {
 			if (models.find(modelName) == models.end())
-			{//Shader not found
+			{ //Model not found
 
-				//Trying to load the shader
+				//Trying to load the model
 				if (modelsPath.find(modelName) == modelsPath.end()) {
-					//Shader path not found
-					log_error("ERROR::SHADER_MANAGER::Shader file not found.");
+					//Model path not found
+					log_error("ERROR::MODEL_MANAGER::Model file not found.");
 					modelsPath[modelName] = "_ERROR_MODEL";
 					return nullptr;
 				}
 				else {
-					//Loading shader
+					//Loading model
 					models[modelName] = new Model(modelsPath[modelName].c_str(), modelName, flipUVs);
 					if(loadModel)
 						models[modelName]->loadFile();

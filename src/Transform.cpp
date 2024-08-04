@@ -18,7 +18,7 @@ namespace Engine
 	}
 	glm::mat4 Transform::globalSpace() const
 	{
-		if (parent)
+		if (parent != nullptr)
 			return parent->globalSpace() * localSpace();
 		else//is root
 			return localSpace();

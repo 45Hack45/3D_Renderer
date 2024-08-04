@@ -3,11 +3,11 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "include/glad.h"
+#include "glad.h"
 
 #include "logger.h"
 
-#include "include/glm/glm.hpp"
+#include "glm/glm.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
 #include <string>

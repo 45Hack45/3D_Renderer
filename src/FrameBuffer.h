@@ -2,7 +2,7 @@
 #ifndef FRAMEBUFFER_H
 #define FRAMEBUFFER_H
 
-#include "glad.h";
+#include "glad.h"
 
 namespace Engine
 {

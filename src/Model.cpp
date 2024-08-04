@@ -12,6 +12,7 @@ namespace Engine
         m_flipUvs = flipUVs;
         m_numMeshes = 0;
         m_meshes = nullptr;
+        importer = nullptr;
     }
 
     Model::~Model()
@@ -32,7 +33,7 @@ namespace Engine
 
         float iniTime = glfwGetTime();
 
-        if (importer)//delete importer if it already has one
+        if (importer != nullptr) //delete importer if it already has one
             realeseLoadingResources();
 
         importer = new Assimp::Importer();
