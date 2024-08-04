@@ -44,7 +44,9 @@ namespace Engine
 		//Variables-----------------------------------
 		
 		//Methods-------------------------------------
-		Editor() {}
+		Editor() {
+			selected = nullptr;
+		}
 		Editor(Editor const&) = delete;
 		Editor& operator=(Editor const&) = delete;
 		~Editor() {};

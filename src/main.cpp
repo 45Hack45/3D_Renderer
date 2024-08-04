@@ -20,7 +20,7 @@ int main() {
 
 	if (error < 0)
 	{
-		system("pause");
+		// system("pause");
 		return error;
 	}
 

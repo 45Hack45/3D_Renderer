@@ -14,9 +14,9 @@
 enum LightSrcType
 {
 	NONE = 0,
-	DIRECTIONAL = 1,
-	SPOT = 2,
-	POINT = 3
+	DIRECTIONAL_LIGHT = 1,
+	SPOT_LIGHT = 2,
+	POINT_LIGHT = 3
 };
 
 class LightSource
@@ -80,7 +80,7 @@ public:
 	}
 
 	LightSrcType getLightSrcType()const {
-		return LightSrcType::DIRECTIONAL;
+		return LightSrcType::DIRECTIONAL_LIGHT;
 	}
 
 	float yaw = 0,pitch = 0;
@@ -117,7 +117,7 @@ public:
 	void setPosition(const glm::vec3& position) { m_pos = position; }
 
 	LightSrcType getLightSrcType()const {
-		return LightSrcType::SPOT;
+		return LightSrcType::SPOT_LIGHT;
 	}
 
 	glm::vec3 m_dir;
@@ -157,7 +157,7 @@ public:
 	}
 
 	LightSrcType getLightSrcType()const {
-		return LightSrcType::POINT;
+		return LightSrcType::POINT_LIGHT;
 	}
 
 	glm::vec3 m_pos;

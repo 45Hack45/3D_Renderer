@@ -159,11 +159,15 @@ namespace Engine
 
 		screenRendered_fbo = new FrameBuffer(800 * 2, 450 * 2, FrameBuffer::FrameType_Depth | FrameBuffer::FrameType_Color, 0, GL_RGB);
 
+		m_model = nullptr;
+		m_model2 = nullptr;
+
 		log_message(log_level_e::LOG_INFO, "Engine Initialized\n");
 		return 0;
 	}
 
 	void Engine::Start() {
+		log_message(log_level_e::LOG_DEBUG, "\n\n\n--------------------------Starting Engine------------------------\n");
 		//m_model = new Model("./rcs/sponza/Sponza.gltf", "Backpack");
 
 		m_model = modelManager->getModel("Sponza",false, true);//Geting and loading model
@@ -174,6 +178,8 @@ namespace Engine
 
 		//IO::printEngineRCSFiles();
 		//IO::printProjectFiles();
+
+		log_message(log_level_e::LOG_DEBUG, "\n\n\n--------------------------End Engine Starting------------------------\n");
 	}
 
 	void Engine::mainLoop() {
@@ -237,16 +243,16 @@ namespace Engine
 		
 
 		//------------Particle
-		ParticleSystem* particleSys = new ParticleSystem(glm::vec3(0.f, 2.f, 0.f), glm::vec3(10.f, 10.f, 10.f), 1, 2);
+		// ParticleSystem* particleSys = new ParticleSystem(glm::vec3(0.f, 2.f, 0.f), glm::vec3(10.f, 10.f, 10.f), 1, 2);
 
 		//------------Fluid
-		FluidSimulation* fluidSim = new FluidSimulation(64, 64, 64);
+		// FluidSimulation* fluidSim = new FluidSimulation(64, 64, 64);
 
 		//------------Cloud
-		VolumetricCloud* vCloud = new VolumetricCloud(64, 64, 64);
-		vCloud->setChanelResolution(10,0,0,0);
-		vCloud->GenerateVoronoiPoints();
-		vCloud->GenerateClouds();
+		// VolumetricCloud* vCloud = new VolumetricCloud(64, 64, 64);
+		// vCloud->setChanelResolution(10,0,0,0);
+		// vCloud->GenerateVoronoiPoints();
+		// vCloud->GenerateClouds();
 
 		RP_shadowMap->setScene(scene);
 		RP_shadowMap->setMainCamera(&cam);
@@ -357,7 +363,7 @@ namespace Engine
 			if(showShadowmapCam)
 				Renderer::drawFullScreenQuad(RP_shadowMap->getFBO()->colorTextureID());
 
-			//drawScene(&cam);
+			// drawScene(&cam);
 
 			//particleSys->Draw(&cam);
 			//fluidSim->Draw(&cam);
@@ -461,22 +467,22 @@ namespace Engine
 
 		shader->setVector("lightPos", lightPos);
 
-		shader->setFloat("far_plane", cascadeCam0->far);
+		shader->setFloat("far_plane", cascadeCam0->farClip);
 		glViewport(0, 0, res, res);
 		renderPass(cascadeCam0, shader);
 
 
 		//glClear(GL_DEPTH_BUFFER_BIT);
 
-		shader->setFloat("far_plane", cascadeCam1->far);
+		shader->setFloat("far_plane", cascadeCam1->farClip);
 		glViewport(res, 0, res, res);
 		renderPass(cascadeCam1, shader);
 
-		shader->setFloat("far_plane", cascadeCam2->far);
+		shader->setFloat("far_plane", cascadeCam2->farClip);
 		glViewport(res * 2, 0, res, res);
 		renderPass(cascadeCam2, shader);
 
-		shader->setFloat("far_plane", cascadeCam3->far);
+		shader->setFloat("far_plane", cascadeCam3->farClip);
 		glViewport(res * 3, 0, res, res);
 		renderPass(cascadeCam3, shader);
 	}
@@ -503,9 +509,6 @@ namespace Engine
 		glm::mat4 projection = glm::mat4(1.f);
 
 		view = cam->GetViewMatrix();
-
-		float near = .01f;
-		float far = 1000.0f;
 
 		projection *= cam->GetProjectionMatrix();
 
@@ -540,8 +543,8 @@ namespace Engine
 			ImGui::DragFloat("Horizontal", &cCam0.ortoFrustrum_Horizontal);
 			ImGui::DragFloat("Vertical", &cCam0.ortoFrustrum_Vertical);
 
-			ImGui::DragFloat("Near", &cCam0.near);
-			ImGui::DragFloat("Far", &cCam0.far);
+			ImGui::DragFloat("Near", &cCam0.nearClip);
+			ImGui::DragFloat("Far", &cCam0.farClip);
 
 			ImGui::Spacing();
 			ImGui::Spacing();
@@ -629,7 +632,7 @@ namespace Engine
 
 		screenRendered_fbo->bind(true);//world render pass---------------------------------------------------------
 
-		glClearColor(.5,.5,.5, 1);
+		glClearColor(.25, .25, .25, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glClearColor(1, 1, 1, 1);
@@ -679,8 +682,8 @@ namespace Engine
 		volumetricLightShader->setInt("marchingSteps", volumetricLight_steps);
 		volumetricLightShader->setFloat("marchingDistance", 100);
 		volumetricLightShader->setVector("cameraDirection", cam->Front);
-		volumetricLightShader->setFloat("farPlane", cam->far);
-		volumetricLightShader->setFloat("nearPlane", cam->near);
+		volumetricLightShader->setFloat("farPlane", cam->farClip);
+		volumetricLightShader->setFloat("nearPlane", cam->nearClip);
 
 		volumetricLightShader->setFloat("intensity", volumetricLight_intensity);
 		volumetricLightShader->setFloat("airDensity", volumetricLight_density);

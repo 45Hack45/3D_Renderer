@@ -52,9 +52,6 @@ namespace Engine
 
 		view = cam->GetViewMatrix();
 
-		float near = .01f;
-		float far = 1000.0f;
-
 		projection *= cam->GetProjectionMatrix();
 
 		shader->setMat4("view", view);

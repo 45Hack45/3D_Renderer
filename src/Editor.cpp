@@ -422,7 +422,8 @@ namespace Engine
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", deltatime * 1000.f, 1.f / (deltatime));
 		ImGui::End();
 
-		ImGuiWindowFlags windowsFlags = ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		// ImGuiWindowFlags windowsFlags = ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		ImGuiWindowFlags windowsFlags = ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoCollapse;
 
 		//Resources
 		if (ImGui::Begin("Resources", NULL, windowsFlags)) {
@@ -458,7 +459,7 @@ namespace Engine
 
 		//Properties
 		if (ImGui::Begin("Properties", NULL, windowsFlags)) {
-			if(selected)
+			if(selected != nullptr)
 				selected->drawEditorGUI_Properties();
 		}
 		ImGui::End();

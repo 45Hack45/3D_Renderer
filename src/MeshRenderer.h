@@ -18,6 +18,8 @@ namespace Engine
 	public:
 		MeshRenderer() {
 			name = "MeshRenderer";
+			m_mesh = nullptr;
+			m_material = nullptr;
 		}
 		void Init(Mesh* mesh, Material* material) {
 			m_mesh = mesh;

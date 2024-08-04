@@ -247,11 +247,11 @@ namespace Engine
 
 	Entity* Scene::loadModel2Scene(Model* model)
 	{
-		if (!model) {
+		if (model == nullptr) {
 			log_error("ERROR::SCENE::LOAD_MODEL_MATERIALS: model is null");
 			return nullptr;
 		}
-		else if (!model->m_scene) {
+		else if (model->m_scene == nullptr) {
 			log_error(("ERROR::SCENE::LOAD_MODEL_MATERIALS: model " + model->assetName + " not loaded.").c_str());
 			return nullptr;
 		}

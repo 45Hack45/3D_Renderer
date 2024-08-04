@@ -2,7 +2,7 @@
 #define CAMERA_H
 
 #include "glad.h"
-#include "glm/glm.hpp""
+#include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
 #include <vector>
@@ -46,7 +46,8 @@ public:
 	float ortoFrustrum_Horizontal = 250;
 	float ortoFrustrum_Vertical = 250;
 
-	float near = 1.f, far = 1000;
+	float nearClip = 1.f;
+	float farClip = 1000;
 	float aspectRatio = 800 / 450;
 
 	// constructor with vectors
@@ -78,9 +79,9 @@ public:
 
 	glm::mat4 GetProjectionMatrix() {
 		if (isOrtographic)
-			return glm::ortho(-(ortoFrustrum_Horizontal / 2), ortoFrustrum_Horizontal / 2, -(ortoFrustrum_Vertical / 2), ortoFrustrum_Vertical / 2, near, far);
+			return glm::ortho(-(ortoFrustrum_Horizontal / 2), ortoFrustrum_Horizontal / 2, -(ortoFrustrum_Vertical / 2), ortoFrustrum_Vertical / 2, nearClip, farClip);
 		else
-			return glm::perspective(glm::radians(Zoom), aspectRatio, near, far);
+			return glm::perspective(glm::radians(Zoom), aspectRatio, nearClip, farClip);
 	}
 
 	glm::mat4 GetViewProjectionMatrix() {
